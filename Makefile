@@ -9,7 +9,8 @@ current: target
 
 # Content
 
-## content.mk
+Sources += content.mk
+## include content.mk
 
 ######################################################################
 
