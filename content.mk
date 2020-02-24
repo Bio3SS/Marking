@@ -1,20 +1,4 @@
 
-## Content
-
-## dropdir has "disk" subdirectories, for disks, and sensitive products in the main directory
-
-## It would be fun to have a rule that does mkdir when appropriate, but we don't
-## mkdir /home/dushoff/Dropbox/courses/3SS/2019/final_disk ##
-## /bin/cp -r /media/dushoff/*/*/* dropdir/final_disk/ ##
-
-Sources += $(wildcard *.R *.pl)
-
-Ignore += dropdir
-dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2020
-dropdir:
-	$(linkdirname)
-dropdir/%: 
-	$(MAKE) dropdir
 
 ######################################################################
 
@@ -22,17 +6,6 @@ dropdir/%:
 ## I mostly merge on idnum. Strategy is to make it numeric as often 
 ## as seems necessary while merging. Then pad it right before avenue
 ## or mosaic. Current code in avenueMerge.R
-
-## Spreadsheets with TA marks from HWs and SAs
-## How did we make original spreadsheet from Avenue?
-
-## Import TA marks (manual) and change empties to zeroes
-## Use named versions of marks.tsv (no revision control in Dropbox)
-## Need to update in Apr 2019
-## downcall dropdir/marks5.tsv  ##
-Ignore += marks.tsv
-marks.tsv: dropdir/marks5.tsv zero.pl ##
-	$(PUSH)
 
 ## Parse out TAmarks, drop students we think have dropped
 ## Used Avenue import info; this could be improved by starting from that
@@ -42,21 +15,6 @@ Sources += nodrops.csv
 dropdir/drops.csv: 
 	$(CP) nodrops.csv $@
 TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
-
-######################################################################
-
-## Polls
-
-## Get PollEverywhere data:
-## 	https://www.polleverywhere.com/reports / Create reports
-## 	Participant response history
-## 	Select groups for this year
-## 	Download csv (lower right)
-
-## To repeat:
-##		Reports / select report you want / Update reports (next to Current Run at top)
-
-##	downcall dropdir/polls.csv ##
 
 ## Mosaic:
 ## downcall dropdir/roster.xls
