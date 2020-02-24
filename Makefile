@@ -20,6 +20,8 @@ Sources += $(wildcard *.R *.pl)
 
 ## mkdir /home/dushoff/Dropbox/courses/3SS/2019/final_disk ##
 ## /bin/cp -r /media/dushoff/*/*/* dropdir/final_disk/ ##
+## mkdir dropdir/midterm1_disk/ ##
+## downcall  dropdir/midterm1_disk/ ##
 
 Sources += $(wildcard *.R *.pl)
 
@@ -34,8 +36,12 @@ dropdir/%:
 
 ### Cribbing
 
+.PRECIOUS: %.pl
 %.pl:
-	$(copy) ../Grading/$@ .
+	$(CP) ../Grading/$@ .
+
+%.R:
+	$(CP) ../Grading/$@ .
 
 ######################################################################
 
@@ -50,6 +56,58 @@ dropdir/%:
 Ignore += marks.tsv
 marks.tsv: dropdir/marks1.tsv zero.pl ##
 	$(PUSH)
+
+######################################################################
+
+## Pipeline to mark and validate a set of scantrons
+
+pardirs += Tests
+
+Ignore += $(pardirs)
+
+## Notes on scantron files
+Sources += media.md
+
+## Add rows manually to the .tsv file if sheets don't scan
+## Or for deferred finals 
+## scanning
+dropdir/%.manual.tsv:
+	$(touch)
+
+## Student itemized responses
+## Script reads manual version first, ignores repeats
+## Necessitated by Daniel Park!
+Ignore += *.responses.tsv
+## midterm1.responses.tsv: rmerge.pl
+%.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
+	$(PUSH)
+
+## Scantron-office scores
+Ignore += *.office.csv
+## midterm1.office.csv: 
+%.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
+	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
+
+## Our scores
+Ignore += $(wildcard *.scoring.csv)
+### Formatted key sheet (made from scantron.csv)
+## make Tests/midterm1.scantron.csv ## to stop making forever ##
+## midterm1.scoring.csv:
+%.scoring.csv: Tests/%.scantron.csv scoring.pl
+	$(PUSH)
+
+## Score the students
+## How many have weird bubble versions? How many have best ≠ bubble?
+## midterm1.scores.Rout:  midterm1.responses.tsv midterm1.scoring.csv scores.R
+%.scores.Rout: %.responses.tsv %.scoring.csv scores.R
+	$(run-R)
+
+## Compare
+
+## final.scorecomp.Rout: final.office.csv final.scores.Rout scorecomp.R
+## 2019 Apr 24 (Wed) Only non-best is because of non-existent version 5
+%.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
+	$(run-R)
 
 ######################################################################
 
@@ -84,7 +142,7 @@ makestuff/Makefile:
 
 -include makestuff/os.mk
 
-## -include makestuff/wrapR.mk
+-include makestuff/wrapR.mk
 
 -include makestuff/git.mk
 -include makestuff/visual.mk
