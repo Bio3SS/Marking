@@ -2,20 +2,6 @@
 
 ######################################################################
 
-## merge notes
-## I mostly merge on idnum. Strategy is to make it numeric as often 
-## as seems necessary while merging. Then pad it right before avenue
-## or mosaic. Current code in avenueMerge.R
-
-## Parse out TAmarks, drop students we think have dropped
-## Used Avenue import info; this could be improved by starting from that
-## Pull a subset of just student info
-
-Sources += nodrops.csv
-dropdir/drops.csv: 
-	$(CP) nodrops.csv $@
-TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
-
 ## Mosaic:
 ## downcall dropdir/roster.xls
 
@@ -56,26 +42,6 @@ pollScorePlus.avenue.Rout: avenueMerge.R
 pollScorePlus.avenue.Rout.csv: avenueMerge.R
 
 pollScorePlus.avenue.csv: avenueNA.pl
-
-######################################################################
-
-
-## Merging test with scoresheet
-## Patch IDs if necessary, 
-## then make them numeric (for robust matching with TAs)
-## Later: pad them for Avenue/mosaic
-Sources += idpatch.csv
-%.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
-	$(run-R)
-## final.patch.Rout: idpatch.R
-
-## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
-## Set numeric to merge here. Pad somewhere downstream
-## Check anomalies from print out
-## Empty scores will be set to 0. Add MSAF to sheet (as NA?) 
-## midterm2.merge.Rout: midMerge.R
-midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
-	$(run-R)
 
 ######################################################################
 

@@ -39,15 +39,19 @@ dropdir/%:
 .PRECIOUS: %.pl
 %.pl:
 	$(CP) ../Grading/$@ .
+	$(RW)
 
+.PRECIOUS: %.R
 %.R:
 	$(CP) ../Grading/$@ .
+	$(RW)
 
 ######################################################################
 
 ## Spreadsheets with TA marks from HWs and SAs
 ## Make original spreadsheet from Avenue by downloading grades
 ## It doesn't work to go via classlist
+## This apparently now (2020) prefixes the IDs with #; maybe make use of this convention
 
 ## Import TA marks (manual) and change empties to zeroes
 ## Use named versions of marks.tsv (no revision control in Dropbox)
@@ -91,7 +95,7 @@ Ignore += *.office.csv
 ## Our scores
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
-## make Tests/midterm1.scantron.csv ## to stop making forever ##
+## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
 ## midterm1.scoring.csv:
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
@@ -104,12 +108,40 @@ Ignore += $(wildcard *.scoring.csv)
 
 ## Compare
 
-## final.scorecomp.Rout: final.office.csv final.scores.Rout scorecomp.R
-## 2019 Apr 24 (Wed) Only non-best is because of non-existent version 5
+## midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
+## 2020 Feb 24 (Mon): Lots of version problems ☹
 %.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
 	$(run-R)
 
 ######################################################################
+
+## Merging test with scoresheet
+## Patch IDs if necessary, 
+## then make them numeric (for robust matching with TAs)
+## The record in idpatch is an example, and may be out of date
+Sources += idpatch.csv
+%.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
+	$(run-R)
+## midterm1.patch.Rout: idpatch.R
+
+## Parse out TAmarks, drop students we think have dropped
+## Used Avenue import info; this could be improved by starting from that
+## Pull a subset of just student info
+Sources += nodrops.csv
+dropdir/drops.csv: 
+	$(CP) nodrops.csv $@
+TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
+
+## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
+## Set numeric to merge here. Pad somewhere downstream
+## Check anomalies from print out
+## Empty scores will be set to 0. Add MSAF to sheet (as NA?) 
+## midterm1.merge.Rout: midMerge.R
+midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
+	$(run-R)
+
+######################################################################
+
 
 ## Polls
 
