@@ -3,10 +3,12 @@ library(dplyr)
 
 scans <- (
 	read_csv(input_files[[1]]
-		, col_names = c("email", "idnum", "score")
+		, col_names = c("macid", "idnum", "score")
 	)
-	%>% mutate(email=sub("@.*", "", email))
-	%>% rename(macid=email)
+	%>% mutate(
+		macid=sub("@.*", "", macid)
+		, idnum = paste0("#",idnum)
+	)
 )
 
 scores <- full_join(

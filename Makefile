@@ -5,6 +5,9 @@ current: target
 
 -include makestuff/perl.def
 
+vim_session:
+	bash -cl "vmt content.mk"
+
 ######################################################################
 
 # Content
@@ -133,15 +136,41 @@ dropdir/drops.csv:
 TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
-## Set numeric to merge here. Pad somewhere downstream
-## Check anomalies from print out
-## Empty scores will be set to 0. Add MSAF to sheet (as NA?) 
+## Empty scores will be set to 0. Add MSAF to sheet as NA
 ## midterm1.merge.Rout: midMerge.R
+## CHECK here for suspicious mismatches; if none, then just use bestScore?
 midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
 
 ######################################################################
 
+## avenueMerge
+## Still developing
+## Code that takes a whole spreadsheet to Avenue still in Tests/
+
+## Put the final marking thing in a form that avenueMerge will understand
+## midterms but not final merged with TAmarks for above this step
+## FRAGILE (need to check quality checks)
+## midterm1.grade.Rout:
+## midterm1.grade.avenue.csv:
+midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
+	$(run-R)
+
+## midterm1.grade.avenue.Rout: avenueMerge.R
+Ignore += *.avenue.Rout.csv
+%.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
+	$(run-R)
+
+## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
+## midterm1.grade.avenue.csv: avenueNA.pl
+Ignore += *.avenue.csv
+%.avenue.csv: %.avenue.Rout.csv avenueNA.pl
+	$(PUSH)
+
+## Click "import"
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=315235
+
+######################################################################
 
 ## Polls
 

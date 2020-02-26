@@ -9,10 +9,10 @@ num <- gsub("[[:alpha:].]", "", rtargetname)
 scores <- (scores 
 	%>% right_join(sa
 		%>% setNames(sub(num, "_curr", names(.)))
-		%>% transmute(idnum=idnum,sa=sa_curr, manVer=manVer_curr)
+		%>% transmute(idnum=idnum,sa=sa_curr, taVer=taVer_curr)
 	)
-	%>% mutate(version = ifelse(version==-1, NA, version)
-		, version = ifelse(is.na(version), manVer, version)
+	%>% mutate(bubVer = ifelse(bubVer==-1, NA, bubVer)
+		## , bubVer = ifelse(is.na(bubVer), taVer, bubVer)
 	)
 )
 head(scores)
@@ -21,18 +21,20 @@ summary(scores)
 ## This code is cumbersome, but I'm trying to remember to use NAs 
 ## in a principled fashion
 
-## Need to check bestVer again, because we've supplemented
-mismatch <- filter(scores, (
-	(!is.na(manVer)) & (manVer != version)
-	| (!is.na(version) & (bestVer != version))
+## Mismatches
+print(filter(scores, (
+	(!is.na(taVer)) & (taVer != bubVer)
+	| (!is.na(bubVer) & (bestVer != bubVer))
 	| (!is.na(verScore) & (verScore>0) & (verScore != bestScore))
-))
-print(mismatch)
-## stopifnot(nrow(mismatch)==0)
+)))
 
+print(filter(scores, 
+	is.na(bubVer) & !is.na(bestScore)
+))
+
+## Half tests?
 print(filter(scores, is.na(bestScore)))
 print(filter(scores, is.na(sa)))
-print(filter(scores, version<0))
 
 scores <- (scores 
 	%>% mutate(

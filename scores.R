@@ -56,7 +56,7 @@ verScore <- sapply(1:nrow(scores), function(i){
 
 scores <- (responses
 	%>% transmute(idnum=X1
-		, version=X2
+		, bubVer=X2
 		, bestScore
 		, bestVer
 		, verScore

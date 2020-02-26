@@ -31,11 +31,6 @@ pollScore.Rout.csv:
 ## Patched, but not doing anything. Because people know what macid is now? remove?
 pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
 
-## Make an avenue file; should work with any number of fields ending in _score (in a variable called scores)
-## along with a field for macid, idnum or both
-## No, scores for input should have only macid, I guess
-
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=273939
 ## import
 
 pollScorePlus.avenue.Rout: avenueMerge.R
@@ -59,17 +54,6 @@ midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 ## Edit finalscore to match names for Avenue output
 final.grade.Rout: final.patch.Rout finalscore.R
 	$(run-R)
-
-## final.grade.avenue.Rout: avenueMerge.R
-Ignore += *.avenue.Rout.csv
-%.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
-	$(run-R)
-
-## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
-## final.grade.avenue.csv: avenueNA.pl
-Ignore += *.avenue.csv
-%.avenue.csv: %.avenue.Rout.csv avenueNA.pl
-	$(PUSH)
 
 ######################################################################
 

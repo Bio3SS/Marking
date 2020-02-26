@@ -13,8 +13,8 @@ sheet <- (read_tsv(input_files[[1]])
 
 sa <- (sheet 
 	%>% transmute(idnum=idnum, macid=macid
-		, sa1=`Midterm 1 Mark`, manVer1 = `Midterm 1 Version`
-		## , sa2=`Midterm 2 Mark`, manVer2 = `Midterm 2 Version`
+		, sa1=`Midterm 1 Mark`, taVer1 = `Midterm 1 Version`
+		## , sa2=`Midterm 2 Mark`, taVer2 = `Midterm 2 Version`
 	)
 )
 
