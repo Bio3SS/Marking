@@ -21,7 +21,7 @@ Sources += $(wildcard *.R *.pl)
 ## dropdir is for sensitive products that I want to back up
 ## It has subdirectories for disks from MPS
 
-## mkdir /home/dushoff/Dropbox/courses/3SS/2019/final_disk ##
+## mkdir /home/dushoff/Dropbox/courses/3SS/2020/final_disk ##
 ## /bin/cp -r /media/dushoff/*/*/* dropdir/final_disk/ ##
 ## mkdir dropdir/midterm1_disk/ ##
 ## downcall  dropdir/midterm1_disk/ ##
