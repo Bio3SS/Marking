@@ -59,9 +59,9 @@ dropdir/%:
 ## Import TA marks (manual) and change empties to zeroes
 ## Use named versions of marks.tsv (no revision control in Dropbox)
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks1.tsv  ##
+## downcall dropdir/marks2.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks1.tsv zero.pl ##
+marks.tsv: dropdir/marks2.tsv zero.pl ##
 	$(PUSH)
 
 ######################################################################
@@ -85,34 +85,33 @@ dropdir/%.manual.tsv:
 ## Script reads manual version first, ignores repeats
 ## Necessitated by Daniel Park!
 Ignore += *.responses.tsv
-## midterm1.responses.tsv: rmerge.pl
+## midterm2.responses.tsv: rmerge.pl
 %.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
 	$(PUSH)
 
+## Our scores
+Ignore += $(wildcard *.scoring.csv)
+### Formatted key sheet (made from scantron.csv)
+## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
+## midterm2.scoring.csv:
+%.scoring.csv: Tests/%.scantron.csv scoring.pl
+	$(PUSH)
+
+## Score the students
+## How many have weird bubble versions? How many have best ≠ bubble?
+## midterm2.scores.Rout:  scores.R
+%.scores.Rout: %.responses.tsv %.scoring.csv scores.R
+	$(run-R)
+
+## Compare with office scores
 ## Scantron-office scores
 Ignore += *.office.csv
 ## midterm1.office.csv: 
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## Our scores
-Ignore += $(wildcard *.scoring.csv)
-### Formatted key sheet (made from scantron.csv)
-## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
-## midterm1.scoring.csv:
-%.scoring.csv: Tests/%.scantron.csv scoring.pl
-	$(PUSH)
-
-## Score the students
-## How many have weird bubble versions? How many have best ≠ bubble?
-## midterm1.scores.Rout:  midterm1.responses.tsv midterm1.scoring.csv scores.R
-%.scores.Rout: %.responses.tsv %.scoring.csv scores.R
-	$(run-R)
-
-## Compare
-
-## midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
 ## 2020 Feb 24 (Mon): Lots of version problems ☹
+## midterm2.scorecomp.Rout: scorecomp.R
 %.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
 	$(run-R)
 
@@ -137,8 +136,9 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Empty scores will be set to 0. Add MSAF to sheet as NA
-## midterm1.merge.Rout: midMerge.R
+
 ## CHECK here for suspicious mismatches; if none, then just use bestScore?
+## midterm2.merge.Rout: midMerge.R
 midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
 

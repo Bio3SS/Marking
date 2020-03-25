@@ -15,6 +15,10 @@ scores <- full_join(
 	scans, scores
 )
 
+## This is pointless when the office doesn't score for us
+print(scores %>% filter(bubVer!=bestVer))
+
+## This is pointless when the office doesn't score for us
 print(scores %>% filter(score!=bestScore))
 
 # rdsave(scores)
