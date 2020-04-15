@@ -57,11 +57,12 @@ dropdir/%:
 ## This apparently now (2020) prefixes the IDs with #; maybe make use of this convention
 
 ## Import TA marks (manual) and change empties to zeroes
+## This means you should add MSAFs as NAs before processing
 ## Use named versions of marks.tsv (no revision control in Dropbox)
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks2.tsv  ##
+## downcall dropdir/marks4.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks2.tsv zero.pl ##
+marks.tsv: dropdir/marks4.tsv zero.pl ##
 	$(PUSH)
 
 ######################################################################
@@ -122,9 +123,9 @@ Ignore += *.office.csv
 ## then make them numeric (for robust matching with TAs)
 ## The record in idpatch is an example, and may be out of date
 Sources += idpatch.csv
+## midterm1.patch.Rout: idpatch.R
 %.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
 	$(run-R)
-## midterm1.patch.Rout: idpatch.R
 
 ## Parse out TAmarks, drop students we think have dropped
 ## Used Avenue import info; this could be improved by starting from that
@@ -142,6 +143,8 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
 
+Sources += testnotes.txt
+
 ######################################################################
 
 ## avenueMerge
@@ -151,18 +154,31 @@ midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 ## Put the final marking thing in a form that avenueMerge will understand
 ## midterms but not final merged with TAmarks for above this step
 ## FRAGILE (need to check quality checks)
-## midterm1.grade.Rout:
-## midterm1.grade.avenue.csv:
+
+## This pulls out the chosen score from a test merge and calls it what Avenue likes
+## midterm2.grade.Rout:
 midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 	$(run-R)
 
-## midterm1.grade.avenue.Rout: avenueMerge.R
+## Do the same for an assignment (COVID!)
+## assign2.grade.Rout: assignscore.R
+assign%.grade.Rout: TAmarks.Rout assignscore.R
+	$(run-R)
+
+## This takes anything with _score variables and makes a pre-Avenue csv
+## midterm2.grade.avenue.Rout: avenueMerge.R
+## assign2.grade.avenue.Rout: avenueMerge.R
 Ignore += *.avenue.Rout.csv
 %.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
 	$(run-R)
 
 ## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
-## midterm1.grade.avenue.csv: avenueNA.pl
+## Avenue started giving me trouble with that as well, so now it just 
+## drops all lines with NA (which is stupid, we could do it above)
+## but then we'd have to worry about the logic set up for posting more than
+## one score at once (which we don't use anyway)
+## midterm2.grade.avenue.csv: avenueNA.pl
+## assign2.grade.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)

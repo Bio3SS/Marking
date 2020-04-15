@@ -13,4 +13,6 @@ scores <- (scores
 	%>% select(-patch_idnum)
 )
 
+summary(scores)
+
 # rdsave(scores)
