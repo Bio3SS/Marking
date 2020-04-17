@@ -79,12 +79,14 @@ Sources += media.md
 ## Add rows manually to the .tsv file if sheets don't scan
 ## Or for deferred finals 
 ## scanning
+## dropdir/midterm2.manual.tsv:
 dropdir/%.manual.tsv:
 	$(touch)
 
 ## Student itemized responses
 ## Script reads manual version first, ignores repeats
 ## Necessitated by Daniel Park!
+## Match .dlm format
 Ignore += *.responses.tsv
 ## midterm2.responses.tsv: rmerge.pl
 %.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
