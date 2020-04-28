@@ -60,9 +60,9 @@ dropdir/%:
 ## This means you should add MSAFs as NAs before processing
 ## Use named versions of marks.tsv (no revision control in Dropbox)
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks4.tsv  ##
+## downcall dropdir/marks5.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks4.tsv zero.pl ##
+marks.tsv: dropdir/marks5.tsv zero.pl ##
 	$(PUSH)
 
 ######################################################################
@@ -163,13 +163,13 @@ midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 	$(run-R)
 
 ## Do the same for an assignment (COVID!)
-## assign2.grade.Rout: assignscore.R
+## assign3.grade.Rout: assignscore.R
 assign%.grade.Rout: TAmarks.Rout assignscore.R
 	$(run-R)
 
 ## This takes anything with _score variables and makes a pre-Avenue csv
 ## midterm2.grade.avenue.Rout: avenueMerge.R
-## assign2.grade.avenue.Rout: avenueMerge.R
+## assign1.grade.avenue.Rout: avenueMerge.R
 Ignore += *.avenue.Rout.csv
 %.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
 	$(run-R)
@@ -180,7 +180,7 @@ Ignore += *.avenue.Rout.csv
 ## but then we'd have to worry about the logic set up for posting more than
 ## one score at once (which we don't use anyway)
 ## midterm2.grade.avenue.csv: avenueNA.pl
-## assign2.grade.avenue.csv: avenueNA.pl
+## assign3.grade.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)

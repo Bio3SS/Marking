@@ -30,11 +30,13 @@ assign <- (sheet %>%
 )
 summary(assign)
 
-
+## This seems horrible (causes errors when I forget to switch)
+## Figure out how to do it fancy
 assign <- (sheet 
 	%>% transmute(idnum=idnum, macid=macid
 		, assign1=`Assignment 1`, assign2=`Assignment 2`
-		## , assign3=`Assignment 3`, assign4=`Assignment 4`
+		, assign3=`Assignment 3`
+		## , assign4=`Assignment 4`
 	)
 )
 
