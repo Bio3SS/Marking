@@ -60,9 +60,9 @@ dropdir/%:
 ## This means you should add MSAFs as NAs before processing
 ## Use named versions of marks.tsv (no revision control in Dropbox)
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks5.tsv  ##
+## downcall dropdir/marks6.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks5.tsv zero.pl ##
+marks.tsv: dropdir/marks6.tsv zero.pl ##
 	$(PUSH)
 
 ######################################################################
