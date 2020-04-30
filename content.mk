@@ -7,39 +7,6 @@
 
 ######################################################################
 
-# Read the polls into a big csv without most of the useless information
-
-polls.Rout: dropdir/polls.csv polls.R
-
-# Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
-# Treat the question that matches "macid" as a fake (if present)
-# and use it to help with ID
-parsePolls.Rout: polls.Rout parsePolls.R
-
-# Calculate a pollScore and combine with the extraScore made by hand
-# The csv is where to look for orphan lines and try to figure out if people are missing points they should get
-# Then loop back to the manual part of the .ssv
-pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
-pollScore.Rout.csv: 
-
-# Ask people to answer a fake question with "macid" in it
-# in all the ways that they answered the polls
-# Then save people manually in column 3 of .ssv
-
-# Merge to save people who repeatedly use student number
-## Why not working? 2019 Apr 29 (Mon)
-## Patched, but not doing anything. Because people know what macid is now? remove?
-pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
-
-## import
-
-pollScorePlus.avenue.Rout: avenueMerge.R
-pollScorePlus.avenue.Rout.csv: avenueMerge.R
-
-pollScorePlus.avenue.csv: avenueNA.pl
-
-######################################################################
-
 ## avenueMerge
 ## Still developing
 ## Code that takes a whole spreadsheet to Avenue still in Tests/

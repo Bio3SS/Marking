@@ -26,6 +26,9 @@ Sources += $(wildcard *.R *.pl)
 ## mkdir dropdir/midterm1_disk/ ##
 ## downcall  dropdir/midterm1_disk/ ##
 
+## Web-only final
+## downcall final_mark.csv
+
 Sources += $(wildcard *.R *.pl)
 
 Ignore += dropdir
@@ -60,9 +63,9 @@ dropdir/%:
 ## This means you should add MSAFs as NAs before processing
 ## Use named versions of marks.tsv (no revision control in Dropbox)
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks6.tsv  ##
+## downcall dropdir/marks7.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks6.tsv zero.pl ##
+marks.tsv: dropdir/marks7.tsv zero.pl ##
 	$(PUSH)
 
 ######################################################################
@@ -164,6 +167,7 @@ midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 
 ## Do the same for an assignment (COVID!)
 ## assign3.grade.Rout: assignscore.R
+.PRECIOUS: assign%.grade.Rout
 assign%.grade.Rout: TAmarks.Rout assignscore.R
 	$(run-R)
 
@@ -204,6 +208,38 @@ Ignore += *.avenue.csv
 ##	downcall dropdir/polls.csv ##
 
 ######################################################################
+
+# Read the polls into a big csv without most of the useless information
+
+polls.Rout: dropdir/polls.csv polls.R
+
+# Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
+# Treat the question that matches "macid" as a fake (if present)
+# and use it to help with ID
+parsePolls.Rout: polls.Rout parsePolls.R
+
+# Calculate a pollScore and combine with the extraScore made by hand
+# The csv is where to look for orphan lines and try to figure out if people are missing points they should get
+# Then loop back to the manual part of the .ssv
+pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
+pollScore.Rout.csv: 
+
+# Ask people to answer a fake question with "macid" in it
+# in all the ways that they answered the polls
+# Then save people manually in column 3 of .ssv
+
+# Merge to save people who repeatedly use student number
+## Why not working? 2019 Apr 29 (Mon)
+## Patched, but not doing anything. Because people know what macid is now? remove?
+pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
+
+## import
+
+pollScorePlus.avenue.Rout: avenueMerge.R
+pollScorePlus.avenue.Rout.csv: avenueMerge.R
+
+pollScorePlus.avenue.csv: avenueNA.pl
+
 
 ### Makestuff
 
