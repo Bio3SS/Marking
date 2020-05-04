@@ -27,7 +27,10 @@ Sources += $(wildcard *.R *.pl)
 ## downcall  dropdir/midterm1_disk/ ##
 
 ## Web-only final
-## downcall final_mark.csv
+## downcall dropdir/final_mark.csv
+Ignore += final_mark.csv
+final_mark.csv:
+	/bin/ln -s dropdir/final_mark.csv
 
 Sources += $(wildcard *.R *.pl)
 
@@ -63,9 +66,9 @@ dropdir/%:
 ## This means you should add MSAFs as NAs before processing
 ## Use named versions of marks.tsv (no revision control in Dropbox)
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks7.tsv  ##
+## downcall dropdir/marks8.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks7.tsv zero.pl ##
+marks.tsv: dropdir/marks8.tsv zero.pl ##
 	$(PUSH)
 
 ######################################################################
@@ -165,6 +168,9 @@ Sources += testnotes.txt
 midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 	$(run-R)
 
+final.grade.Rout: final.patch.Rout finalscore.R
+	$(run-R)
+
 ## Do the same for an assignment (COVID!)
 ## assign3.grade.Rout: assignscore.R
 .PRECIOUS: assign%.grade.Rout
@@ -172,6 +178,7 @@ assign%.grade.Rout: TAmarks.Rout assignscore.R
 	$(run-R)
 
 ## This takes anything with _score variables and makes a pre-Avenue csv
+## final.grade.avenue.Rout: avenueMerge.R
 ## midterm2.grade.avenue.Rout: avenueMerge.R
 ## assign1.grade.avenue.Rout: avenueMerge.R
 Ignore += *.avenue.Rout.csv
@@ -183,6 +190,8 @@ Ignore += *.avenue.Rout.csv
 ## drops all lines with NA (which is stupid, we could do it above)
 ## but then we'd have to worry about the logic set up for posting more than
 ## one score at once (which we don't use anyway)
+
+## final.grade.avenue.csv: avenueNA.pl
 ## midterm2.grade.avenue.csv: avenueNA.pl
 ## assign3.grade.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
@@ -197,7 +206,8 @@ Ignore += *.avenue.csv
 ## Polls
 
 ## Get PollEverywhere data:
-## 	https://www.polleverywhere.com/reports / Create reports
+## 	https://www.polleverywhere.com/reports
+## 	Create reports
 ## 	Participant response history
 ## 	Select groups for this year
 ## 	Download csv (lower right)
@@ -240,6 +250,48 @@ pollScorePlus.avenue.Rout.csv: avenueMerge.R
 
 pollScorePlus.avenue.csv: avenueNA.pl
 
+######################################################################
+
+## Final exam and final grade
+## Regular scantron-exam stuff still in content.mk
+
+final.patch.Rout: final_mark.csv finalAvenue.R
+	$(run-R)
+
+## Read and combine different mark sources
+
+tests.Rout: TAmarks.Rout midterm1.merge.Rout.envir midterm2.merge.Rout.envir final.patch.Rout.envir tests.R
+
+## Final grade: 
+## Check weightings, number of assignments, components, etc.
+## course.Rout.csv: course.R
+course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
+
+######################################################################
+
+## Mosaic
+
+## Go to course through faculty center
+## You can download as EXCEL (upper right of roster display)
+## and upload as CSV
+
+## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
+## downcall dropdir/mosaic.csv
+
+## Check class number 
+## Check dropCandidates in Rout
+## mosaic_grade.Rout.csv: mosaic_grade.R
+mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
+## Upload this .csv to mosaic
+## Faculty center, online grading tab
+## ~/Downloads/grade_guide.pdf
+## There is no guidance about students with incomplete marks; let's see what happens
+
+## Copy grades to dropdir for diffing:
+#### cp mosaic_grade.Rout.csv dropdir ##
+Ignore += grade.diff
+grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
+	$(diff)
 
 ### Makestuff
 

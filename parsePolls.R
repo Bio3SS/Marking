@@ -1,6 +1,7 @@
-> print(names(report))
 
+print(names(id))
 ## Does not work with current code, but was a good idea
+## The fancy way would be to grep and rename id variables
 firstname <- "First.name" 
 lastname <- "Last.name"           
 email <- "Email"                  
@@ -33,12 +34,12 @@ emails <- with(id, {sapply(1:nrow(id), function(i){
 	}
 	return(paste(
 		"UNKNOWN"
-		, First.Name[[i]]
-		, Last.Name[[i]]
+		, First.name[[i]]
+		, Last.name[[i]]
 		, Email[[i]]
 		, Custom.report.ID[[i]]
-		, Screen.Name[[i]]
-		, Public.ID[[i]]
+		, Screen.name[[i]]
+		, Participant.ID[[i]]
 		, sep="_"
 	))
 })})
