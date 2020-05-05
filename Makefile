@@ -65,6 +65,8 @@ dropdir/%:
 ## Import TA marks (manual) and change empties to zeroes
 ## This means you should add MSAFs as NAs before processing
 ## Use named versions of marks.tsv (no revision control in Dropbox)
+## 2020 May 04 (Mon): Don't bother with versions in future; 
+## docs has history in the unlikely event we need it
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
 ## downcall dropdir/marks8.tsv  ##
 Ignore += marks.tsv
@@ -156,7 +158,7 @@ Sources += testnotes.txt
 ######################################################################
 
 ## avenueMerge
-## Still developing
+## Still developing; right now I post things one at a time
 ## Code that takes a whole spreadsheet to Avenue still in Tests/
 
 ## Put the final marking thing in a form that avenueMerge will understand
@@ -169,6 +171,9 @@ midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 	$(run-R)
 
 final.grade.Rout: final.patch.Rout finalscore.R
+	$(run-R)
+
+course.grade.Rout: course.Rout courseGrade.R
 	$(run-R)
 
 ## Do the same for an assignment (COVID!)
@@ -191,6 +196,7 @@ Ignore += *.avenue.Rout.csv
 ## but then we'd have to worry about the logic set up for posting more than
 ## one score at once (which we don't use anyway)
 
+## course.grade.avenue.csv: avenueNA.pl
 ## final.grade.avenue.csv: avenueNA.pl
 ## midterm2.grade.avenue.csv: avenueNA.pl
 ## assign3.grade.avenue.csv: avenueNA.pl
@@ -200,6 +206,12 @@ Ignore += *.avenue.csv
 
 ## Click "import"
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=315235
+
+######################################################################
+
+## Code pledges
+
+code.Rout: 
 
 ######################################################################
 
@@ -272,19 +284,24 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## Mosaic
 
 ## Go to course through faculty center
+## https://epprd.mcmaster.ca/psp/prepprd/EMPLOYEE/SA/c/SA_LEARNING_MANAGEMENT.SS_FACULTY.GBL?pslnkid=MCM_WC_FCLT_CNTR
 ## You can download as EXCEL (upper right of roster display)
 ## and upload as CSV
 
 ## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
 ## downcall dropdir/mosaic.csv
+## It would be better to change some of the code here and keep the
+## student numbers as strings
 
-## Check class number 
+## CHECK class number (needs to be cribbed from Mosaic and entered here)
 ## Check dropCandidates in Rout
-## mosaic_grade.Rout.csv: mosaic_grade.R
+
 mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
+## mosaic_grade.Rout.csv: mosaic_grade.R
+
 ## Upload this .csv to mosaic
 ## Faculty center, online grading tab
-## ~/Downloads/grade_guide.pdf
+## ~/Downloads/grade_guide.pdf ##
 ## There is no guidance about students with incomplete marks; let's see what happens
 
 ## Copy grades to dropdir for diffing:

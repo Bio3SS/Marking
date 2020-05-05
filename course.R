@@ -3,7 +3,7 @@
 ## 1000 for no balance
 downgrade <- 0
 examRho <- 1.3 ## odds curve for final
-offset <- 0.5 ## 0 to round down
+offset <- 0.999 ## 0 to round down
 testwt <- c(25, 25, 40)
 asntot <- c(16, 12, 10)
 
