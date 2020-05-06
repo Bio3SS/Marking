@@ -24,6 +24,8 @@ course <- (students
 	%>% mutate(final.test = oddsCurve(final.test, rho=examRho, points=40))
 )
 
+print(course, n=80)
+
 course <- (course
 	%>% rowwise()
 	%>% mutate(

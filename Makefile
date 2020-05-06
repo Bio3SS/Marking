@@ -211,7 +211,7 @@ Ignore += *.avenue.csv
 
 ## Code pledges
 
-code.Rout: 
+code.Rout: dropdir/code.txt final_mark.csv code.R
 
 ######################################################################
 
@@ -267,7 +267,9 @@ pollScorePlus.avenue.csv: avenueNA.pl
 ## Final exam and final grade
 ## Regular scantron-exam stuff still in content.mk
 
-final.patch.Rout: final_mark.csv finalAvenue.R
+## Temporarily delete people who didn't submit honor statement
+Sources += final_tmp.csv
+final.patch.Rout: final_tmp.csv finalAvenue.R
 	$(run-R)
 
 ## Read and combine different mark sources

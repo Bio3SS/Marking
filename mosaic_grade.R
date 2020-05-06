@@ -22,7 +22,6 @@ summary(roster)
 roster <- (roster
 	%>% mutate(idnum=sprintf("%09d", as.numeric(ID))) 
 	%>% left_join(course)
-	%>% filter(final.test > 0)
 	%>% transmute(Class=Class, idnum, mark=courseGrade)
 ) %>% write_csv(csvname, col_names=FALSE)
 
