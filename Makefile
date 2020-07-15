@@ -27,7 +27,9 @@ Sources += $(wildcard *.R *.pl)
 ## downcall  dropdir/midterm1_disk/ ##
 
 ## Web-only final
-## downcall dropdir/final_mark.csv
+## RIGHT-click the quiz and choose "statistics"
+## Download "User" statistics
+## dropdir/final_mark.csv
 Ignore += final_mark.csv
 final_mark.csv:
 	/bin/ln -s dropdir/final_mark.csv
@@ -210,6 +212,8 @@ Ignore += *.avenue.csv
 ######################################################################
 
 ## Code pledges
+## You can't get a final grade without a code pledge!
+## No, that wasn't it!
 
 code.Rout: dropdir/code.txt final_mark.csv code.R
 
@@ -267,7 +271,7 @@ pollScorePlus.avenue.csv: avenueNA.pl
 ## Final exam and final grade
 ## Regular scantron-exam stuff still in content.mk
 
-final.patch.Rout: dropdir/final_tmp.csv finalAvenue.R
+final.patch.Rout: final_mark.csv finalAvenue.R
 	$(run-R)
 
 ## Read and combine different mark sources
