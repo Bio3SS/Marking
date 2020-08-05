@@ -45,20 +45,6 @@ dropdir/%:
 
 ######################################################################
 
-### Cribbing
-
-.PRECIOUS: %.pl
-%.pl:
-	$(CP) ../Grading/$@ .
-	$(RW)
-
-.PRECIOUS: %.R
-%.R:
-	$(CP) ../Grading/$@ .
-	$(RW)
-
-######################################################################
-
 ## Spreadsheets with TA marks from HWs and SAs
 ## Make original spreadsheet from Avenue by downloading grades
 ## It doesn't work to go via classlist
