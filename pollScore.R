@@ -20,8 +20,11 @@ sf <- (sf
 	%>% group_by(id)
 	%>% summarise(score = sum(score))
 )
+summary(sf)
 
 ef <- read.table(input_files[[1]], header=TRUE)
+summary(ef)
+
 df <- full_join(sf, ef)
 df <- within(df, {
 	extra[is.na(extra)] <- 0

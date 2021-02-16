@@ -18,6 +18,9 @@ Sources += $(wildcard *.R *.pl)
 
 ######################################################################
 
+## 2021 Feb 15 (Mon) Accumulating web-based and scantron-based stuff
+## Unify next time
+
 ## dropdir is for sensitive products that I want to back up
 ## It has subdirectories for disks from MPS
 
@@ -37,7 +40,8 @@ final_mark.csv:
 Sources += $(wildcard *.R *.pl)
 
 Ignore += dropdir
-dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2020
+## mkdir /home/dushoff/Dropbox/courses/3SS/2021
+dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2021
 dropdir:
 	$(linkdirname)
 dropdir/%: 
@@ -49,16 +53,22 @@ dropdir/%:
 ## Make original spreadsheet from Avenue by downloading grades
 ## It doesn't work to go via classlist
 ## This apparently now (2020) prefixes the IDs with #; maybe make use of this convention
+## 2021: NOw it prefixes the macids, too!
+## Download (with first/last name)
+## GEt rid of end field, extra #
+## Convert to tsv for copy-paste (vim to gsheet)
+## Match column names to previous year
 
 ## Import TA marks (manual) and change empties to zeroes
 ## This means you should add MSAFs as NAs before processing
-## Use named versions of marks.tsv (no revision control in Dropbox)
-## 2020 May 04 (Mon): Don't bother with versions in future; 
 ## docs has history in the unlikely event we need it
+## 2020
+## https://docs.google.com/spreadsheeTS/D/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690 
+## 2021
 ## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks8.tsv  ##
+## downcall dropdir/marks.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks8.tsv zero.pl ##
+marks.tsv: dropdir/marks.tsv zero.pl ##
 	$(PUSH)
 
 ######################################################################
@@ -128,10 +138,16 @@ Sources += idpatch.csv
 ## Parse out TAmarks, drop students we think have dropped
 ## Used Avenue import info; this could be improved by starting from that
 ## Pull a subset of just student info
+## 2021 Feb 15 (Mon) Trying to modularize
 Sources += nodrops.csv
 dropdir/drops.csv: 
 	$(CP) nodrops.csv $@
-TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
+
+## Get ID info and drop the drops
+sheetID.Rout: marks.tsv dropdir/drops.csv sheetID.R
+## Read the same main sheet and left_join stuff that's actually there.
+## Not implemented
+TAmarks.Rout: marks.tsv sheetID.Rout TAmarks.R
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Empty scores will be set to 0. Add MSAF to sheet as NA
@@ -175,7 +191,7 @@ assign%.grade.Rout: TAmarks.Rout assignscore.R
 ## midterm2.grade.avenue.Rout: avenueMerge.R
 ## assign1.grade.avenue.Rout: avenueMerge.R
 Ignore += *.avenue.Rout.csv
-%.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
+%.avenue.Rout: %.Rout sheetID.Rout avenueMerge.R
 	$(run-R)
 
 ## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
@@ -221,7 +237,7 @@ code.Rout: dropdir/code.txt final_mark.csv code.R
 
 ######################################################################
 
-# Read the polls into a big csv without most of the useless information
+# Read the polls into three variables
 
 polls.Rout: dropdir/polls.csv polls.R
 
@@ -233,8 +249,20 @@ parsePolls.Rout: polls.Rout parsePolls.R
 # Calculate a pollScore and combine with the extraScore made by hand
 # The csv is where to look for orphan lines and try to figure out if people are missing points they should get
 # Then loop back to the manual part of the .ssv
+
+Sources += extraPolls.ssv
+## Make an empty extraPolls automatically
+dropdir/%.ssv: 
+	$(CP) $*.ssv $@
+## del dropdir/extraPolls.ssv ##
+
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 pollScore.Rout.csv: 
+
+## Provisional poll scores
+
+pollScore.avenue.Rout: avenueMerge.R
+pollScore.avenue.Rout.csv: avenueMerge.R
 
 # Ask people to answer a fake question with "macid" in it
 # in all the ways that they answered the polls

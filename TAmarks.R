@@ -1,13 +1,6 @@
 library(readr)
 library(dplyr)
 
-sheet <- (read_tsv(input_files[[1]])
-	%>% anti_join(
-		read_csv(input_files[[2]])
-		%>% mutate(idnum=as.character(idnum))
-	)
-)
-
 ## Name	macid	idnum	Assignment 1	Assignment 2	Midterm 1 Mark	Midterm 1 Version	Assignment 3	Midterm 2 Mark	Midterm 2 Version	Assignment 4
 ## Dropped some Avenue-ish stuff. Can be found in avenueMerge, and maybe in the old (Tests/) version of this file
 ## Don't comment things out; it will bite you. Add blank column heads should work?

@@ -28,9 +28,13 @@ numResp <- sapply(rec, function(t){
 
 print(numResp)
 
+## Select questions that look real
 res <- numResp>1
-
 rec <- rec[res]
 report <- report[res]
+
+summary(id)
+summary(report)
+summary(rec)
 
 # rdsave(id, report, rec)

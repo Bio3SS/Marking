@@ -1,4 +1,3 @@
-
 print(names(id))
 ## Does not work with current code, but was a good idea
 ## The fancy way would be to grep and rename id variables
@@ -6,8 +5,9 @@ firstname <- "First.name"
 lastname <- "Last.name"           
 email <- "Email"                  
 
-## Transfer the fake question from question world to id world
+print(names(report))
 
+## Transfer the fake question from question world to id world
 fq <-(which(grepl("macid", names(report))))
 if(length(fq)==1){
 	id$ques <- tolower(report[[fq]])
@@ -17,10 +17,8 @@ if(length(fq)==1){
 	rec <- rec[-fq]
 } else {id$ques <- "UNKNOWN"}
 
-
 ## What does the id frame look like?
 ## print(summary(id))
-## quit()
 
 emails <- with(id, {sapply(1:nrow(id), function(i){
 	if(grepl("mcmaster", Email[[i]], ignore.case=TRUE)){
@@ -54,17 +52,23 @@ print(rec)
 rec <- as.data.frame(sapply(rec, function(r){
 	return(sub(" +.*", "", r))
 }))
+print(rec)
 
+## Pull dates from the poll matrix (there will be blanks as well as repeats)
 qdates <- sapply(rec, function(r){
-	return(levels(r)[[2]])
+	return(unique(r[r!=""]))
 })
 
+print(qdates)
+
+## Number of polls on each date
 qq <- sapply(qdates, function(q){
 	return(sum(q==qdates))
 })
 
-data.frame(
-	qdates, qq
-)
+## Look at the answers
+summary(qdates)
+summary(qq)
+data.frame(qdates, qq)
 
 # rdsave(id, report, qq)
