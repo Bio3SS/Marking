@@ -145,9 +145,12 @@ dropdir/drops.csv:
 
 ## Get ID info and drop the drops
 sheetID.Rout: marks.tsv dropdir/drops.csv sheetID.R
+
 ## Read the same main sheet and left_join stuff that's actually there.
 ## Not implemented
 TAmarks.Rout: marks.tsv sheetID.Rout TAmarks.R
+
+######################################################################
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Empty scores will be set to 0. Add MSAF to sheet as NA
@@ -271,7 +274,7 @@ pollScore.avenue.Rout.csv: avenueMerge.R
 # Merge to save people who repeatedly use student number
 ## Why not working? 2019 Apr 29 (Mon)
 ## Patched, but not doing anything. Because people know what macid is now? remove?
-pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
+pollScorePlus.Rout: pollScore.Rout sheetID.Rout pollScorePlus.R
 
 ## import
 
