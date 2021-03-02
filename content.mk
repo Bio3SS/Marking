@@ -1,3 +1,51 @@
+pardirs += Tests
+
+Ignore += $(pardirs)
+
+## Notes on scantron files
+Sources += media.md
+
+## Add rows manually to the .tsv file if sheets don't scan
+## Or for deferred finals 
+## scanning
+## dropdir/midterm2.manual.tsv:
+dropdir/%.manual.tsv:
+	$(touch)
+
+## Student itemized responses
+## Script reads manual version first, ignores repeats
+## Necessitated by Daniel Park!
+## Match .dlm format
+Ignore += *.responses.tsv
+## midterm2.responses.tsv: rmerge.pl
+%.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
+	$(PUSH)
+
+## Our scores
+Ignore += $(wildcard *.scoring.csv)
+### Formatted key sheet (made from scantron.csv)
+## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
+## midterm2.scoring.csv:
+%.scoring.csv: Tests/%.scantron.csv scoring.pl
+	$(PUSH)
+
+## Score the students
+## How many have weird bubble versions? How many have best ≠ bubble?
+## midterm2.scores.Rout:  scores.R
+%.scores.Rout: %.responses.tsv %.scoring.csv scores.R
+	$(run-R)
+
+## Compare with office scores
+## Scantron-office scores
+Ignore += *.office.csv
+## midterm1.office.csv: 
+%.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
+	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
+
+## 2020 Feb 24 (Mon): Lots of version problems ☹
+## midterm2.scorecomp.Rout: scorecomp.R
+%.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
+	$(run-R)
 
 
 ######################################################################
@@ -6,6 +54,30 @@
 ## downcall dropdir/roster.xls
 
 ######################################################################
+
+## Merging test with scoresheet
+## Patch IDs if necessary, 
+## then make them numeric (for robust matching with TAs)
+## The record in idpatch is an example, and may be out of date
+Sources += idpatch.csv
+## midterm1.patch.Rout: idpatch.R
+%.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
+	$(run-R)
+
+## Parse out TAmarks, drop students we think have dropped
+## Used Avenue import info; this could be improved by starting from that
+## Pull a subset of just student info
+## 2021 Feb 15 (Mon) Trying to modularize
+Sources += nodrops.csv
+dropdir/drops.csv: 
+	$(CP) nodrops.csv $@
+
+## Get ID info and drop the drops
+sheetID.Rout: marks.tsv dropdir/drops.csv sheetID.R
+
+## Read the same main sheet and left_join stuff that's actually there.
+## Not implemented
+TAmarks.Rout: marks.tsv sheetID.Rout TAmarks.R
 
 ## avenueMerge
 ## Still developing
