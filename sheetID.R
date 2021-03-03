@@ -1,10 +1,11 @@
 
 library(readr)
 library(dplyr)
+library(shellpipes)
 
-sheet <- (read_tsv(input_files[[1]])
+sheet <- (tsvRead()
 	%>% anti_join(
-		read_csv(input_files[[2]])
+		csvRead()
 		%>% mutate(idnum=as.character(idnum))
 	)
 )
@@ -13,3 +14,4 @@ names(sheet)
 
 students <- sheet %>% select(idnum, macid)
 
+saveVars(students, sheet)

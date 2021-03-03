@@ -64,24 +64,23 @@ Sources += idpatch.csv
 %.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
 	$(run-R)
 
-## Parse out TAmarks, drop students we think have dropped
-## Used Avenue import info; this could be improved by starting from that
-## Pull a subset of just student info
-## 2021 Feb 15 (Mon) Trying to modularize
-Sources += nodrops.csv
-dropdir/drops.csv: 
-	$(CP) nodrops.csv $@
-
-## Get ID info and drop the drops
-sheetID.Rout: marks.tsv dropdir/drops.csv sheetID.R
-
-## Read the same main sheet and left_join stuff that's actually there.
-## Not implemented
-TAmarks.Rout: marks.tsv sheetID.Rout TAmarks.R
 
 ## avenueMerge
 ## Still developing
 ## Code that takes a whole spreadsheet to Avenue still in Tests/
+
+######################################################################
+
+## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
+## Empty scores will be set to 0. Add MSAF to sheet as NA
+
+## CHECK here for suspicious mismatches; if none, then just use bestScore?
+## midterm2.merge.Rout: midMerge.R
+midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
+	$(run-R)
+
+## Stuff to keep track of in terms of student-chasing.
+Sources += testnotes.txt
 
 ## Put the final marking thing in a form that avenueMerge will understand
 ## midterms but not final merged with TAmarks for above this step
@@ -93,11 +92,3 @@ midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 ## Edit finalscore to match names for Avenue output
 final.grade.Rout: final.patch.Rout finalscore.R
 	$(run-R)
-
-######################################################################
-######################################################################
-
-## Older stuff, currently unsuppressing
-## Analysis stuff may still be suppressed here
-
-Sources += grades.mk

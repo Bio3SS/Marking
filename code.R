@@ -1,7 +1,18 @@
-codes <- read.csv(input_files[[1]], header=FALSE)$V1
-finals <- read.csv(input_files[[2]])$Username
+library(shellpipes)
+library(dplyr)
 
-setdiff(finals, codes)
-setdiff(codes, finals)
+code <- (csvRead(pat="code", col_names=FALSE)
+	%>% transmute(Username=X1, honor=TRUE)
+) 
 
+scores <- (full_join(code , csvRead(pat="scores"))
+	%>% select(Username, honor, Score)
+)
 
+print(scores %>% filter(is.na(Score)))
+
+scores <- (scores
+	%>% transmute()
+)
+
+saveVars(scores)

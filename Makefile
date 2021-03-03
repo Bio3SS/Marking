@@ -36,21 +36,6 @@ dropdir/%:
 
 ######################################################################
 
-## Web-only tests
-## Click arrow next to quiz and choose "statistics"
-## Download "User" statistics
-
-## dropdir/midterm1scores.csv
-
-## dropdir/final_mark.csv
-Ignore += final_mark.csv
-final_mark.csv:
-	/bin/ln -s dropdir/final_mark.csv
-
-Sources += $(wildcard *.R *.pl)
-
-######################################################################
-
 ## Spreadsheets with TA marks from HWs and SAs
 ## Make original spreadsheet from Avenue by downloading grades
 ## It doesn't work to go via classlist
@@ -64,31 +49,73 @@ Sources += $(wildcard *.R *.pl)
 ## Import TA marks (manual) and change empties to zeroes
 ## This means you should add MSAFs as NAs before processing
 ## docs has history in the unlikely event we need it
-## 2020
-## https://docs.google.com/spreadsheeTS/D/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690 
-## 2021
-## https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#gid=728284690
-## downcall dropdir/marks.tsv  ##
+
+## https://docs.google.com/spreadsheets/d/1UNhu1yGSspssOkWVoyxcD2TE2_3i14hdLRd8d5SGbco/edit#gid=0
+## dropdir/marks.tsv  ##
+## 2020_version https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#2020_version
 Ignore += marks.tsv
 marks.tsv: dropdir/marks.tsv zero.pl ##
 	$(PUSH)
 
+## Parse out TAmarks, drop students we think have dropped
+## Used Avenue import info; this could be improved by starting from that
+## Pull a subset of just student info
+## 2021 Feb 15 (Mon) Trying to modularize
+Sources += nodrops.csv
+dropdir/drops.csv: 
+	$(CP) nodrops.csv $@
+
+## Get ID info and drop the drops
+sheetID.Rout: marks.tsv dropdir/drops.csv sheetID.R
+	$(pipeR)
+
+## Parse some marks 
+TAmarks.Rout: TAmarks.R sheetID.rda
+	$(pipeR)
+## Older code with some version and SA stuff; pre-pipe
+## TAmarksIP.Rout: marks.tsv sheetID.Rout TAmarksIP.R
+
+######################################################################
+
+## Web-only tests
+## Click arrow next to quiz and choose "statistics"
+## Download "User" statistics
+
+## dropdir/midterm1.scores.csv ##
+## dropdir/midterm1.code.zip ##
+
+## unzip dropdir/midterm1.code.zip "*/*/*.mbox" -d . ##
+## mv */*/*.mbox midterm1.mbox ##
+
+## Code statements download mbox using https://takeout.google.com/
+%.code.csv: %.mbox codebox.pl
+	$(PUSH)
+
+## Manual additions
+Sources += midterm1.honor.csv
+
+## midterm1.allcode.csv:
+%.allcode.csv: %.code.csv %.honor.csv
+	$(cat)
+
+## Check for missing and extra pledges
+## midterm1.code.Rout: code.R
+%.code.Rout: %.allcode.csv dropdir/midterm1.scores.csv code.R
+	$(pipeR)
+
+## Merge spreadsheet to handle NAs
+## Compare midMerge.R (the scantron, bubble-calc version)
+
+# midterm1.merge.Rout: merge.R
+%.merge.Rout: merge.R %.code.rda TAmarks.rda
+	$(pipeR)
+
 ######################################################################
 
 ## Pipeline to mark and validate a set of scantrons
-## Moving stuff back to content.mk
+## Moved back to content.mk 2021 Mar 01 (Mon)
 
-######################################################################
-
-## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
-## Empty scores will be set to 0. Add MSAF to sheet as NA
-
-## CHECK here for suspicious mismatches; if none, then just use bestScore?
-## midterm2.merge.Rout: midMerge.R
-midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
-	$(run-R)
-
-Sources += testnotes.txt
+## SA merge stuf also moved back 2021 Mar 02 (Tue)
 
 ######################################################################
 
@@ -141,14 +168,6 @@ Ignore += *.avenue.csv
 
 ## Click "import"
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=315235
-
-######################################################################
-
-## Code pledges
-## You can't get a final grade without a code pledge!
-## No, that wasn't it!
-
-code.Rout: dropdir/code.txt final_mark.csv code.R
 
 ######################################################################
 
@@ -259,6 +278,8 @@ Ignore += grade.diff
 grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
 	$(diff)
 
+######################################################################
+
 ### Makestuff
 
 Sources += Makefile
@@ -275,7 +296,7 @@ makestuff/Makefile:
 
 -include makestuff/os.mk
 
--include makestuff/wrapR.mk
+-include makestuff/pipeR.mk
 
 -include makestuff/git.mk
 -include makestuff/visual.mk
