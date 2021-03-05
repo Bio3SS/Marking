@@ -9,10 +9,17 @@ scores <- (full_join(code , csvRead(pat="scores"))
 	%>% select(Username, honor, Score)
 )
 
+cat("No test")
 print(scores %>% filter(is.na(Score)))
+scores <- scores %>% filter(!is.na(Score))
 
 scores <- (scores
-	%>% transmute()
+	%>% transmute(macid=Username
+		, score=ifelse(is.na(honor), NA, Score)
+	)
 )
+
+cat("No pledge")
+print(scores %>% filter(is.na(score)))
 
 saveVars(scores)

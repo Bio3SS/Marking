@@ -92,3 +92,27 @@ midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 ## Edit finalscore to match names for Avenue output
 final.grade.Rout: final.patch.Rout finalscore.R
 	$(run-R)
+
+######################################################################
+
+## This takes anything with _score variables and makes a pre-Avenue csv
+## final.grade.avenue.Rout: avenueMerge.R
+## midterm2.grade.avenue.Rout: avenueMerge.R
+## assign1.grade.avenue.Rout: avenueMerge.R
+Ignore += *.avenue.Rout.csv
+%.avenue.Rout: %.Rout sheetID.Rout avenueMerge.R
+	$(run-R)
+
+## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
+## Avenue started giving me trouble with that as well, so now it just 
+## drops all lines with NA (which is stupid, we could do it above)
+## but then we'd have to worry about the logic set up for posting more than
+## one score at once (which we don't use anyway)
+
+## course.grade.avenue.csv: avenueNA.pl
+## final.grade.avenue.csv: avenueNA.pl
+## midterm2.grade.avenue.csv: avenueNA.pl
+## assign3.grade.avenue.csv: avenueNA.pl
+Ignore += *.avenue.csv
+%.avenue.csv: %.avenue.Rout.csv avenueNA.pl
+	$(PUSH)

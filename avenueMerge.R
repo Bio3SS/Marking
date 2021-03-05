@@ -1,5 +1,9 @@
 library(dplyr)
 library(readr)
+library(shellpipes)
+
+loadEnvironments()
+scores <- rdsRead()
 
 summary(students)
 summary(scores)
@@ -9,7 +13,4 @@ summary(scores)
 	%>% setNames(gsub(pattern="_score", replacement=" Points Grade" , names(.)))
 	%>% mutate(`End-of-Line Indicator` = "#")
 	%>% rename(OrgDefinedId=idnum , Username=macid)
-) %>% write_csv(csvname)
-
-# rdnosave
-
+) %>% csvSave()

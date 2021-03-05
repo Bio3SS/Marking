@@ -110,22 +110,48 @@ Sources += midterm1.honor.csv
 %.merge.Rout: merge.R %.code.rda TAmarks.rda
 	$(pipeR)
 
+# Avenue-style scoring ## Need to see what works with idnum vs. macid
+## midterm1.testscore.Rout: testscore.R
+%.testscore.Rout: testscore.R %.merge.rds
+	$(pipeR)
+
+# midterm1.testscore.avenue.Rout.csv: avenueMerge.R
+# midterm1.testscore.avenue.Rout: avenueMerge.R
+
+######################################################################
+
+## What about posting assignment marks? I used to be against this
+## Students can contact TAs for assignment marks and feedback?
+
+## Stopped in the middle! 2021 Mar 03 (Wed)
+
+## Do the same for an assignment (COVID!)
+## assign1.grade.Rout: assignscore.R
+.PRECIOUS: assign%.grade.Rout
+assign%.grade.Rout: TAmarks.rda assignscore.R
+	$(pipeR)
+
+######################################################################
+
+## Prep for Avenue
+## merges into test and assignment pipelines being developed above
+## there's also stuff below and in content.mk!!
+## This takes anything with _score variables and makes a pre-Avenue csv
+## final.grade.avenue.Rout: avenueMerge.R
+## midterm2.grade.avenue.Rout: avenueMerge.R
+## assign1.grade.avenue.Rout: avenueMerge.R
+Ignore += *.avenue.Rout.csv
+%.avenue.Rout: %.rds sheetID.rda avenueMerge.R
+	$(run-R)
+
 ######################################################################
 
 ## Pipeline to mark and validate a set of scantrons
 ## Moved back to content.mk 2021 Mar 01 (Mon)
 
-## SA merge stuf also moved back 2021 Mar 02 (Tue)
+## SA merge stuff (marks recorded on spreadsheet) also moved back 2021 Mar 02 (Tue)
 
 ######################################################################
-
-## avenueMerge
-## Still developing; right now I post things one at a time
-## Code that takes a whole spreadsheet to Avenue still in Tests/
-
-## Put the final marking thing in a form that avenueMerge will understand
-## midterms but not final merged with TAmarks for above this step
-## FRAGILE (need to check quality checks)
 
 ## This pulls out the chosen score from a test merge and calls it what Avenue likes
 ## midterm2.grade.Rout:
@@ -136,20 +162,6 @@ final.grade.Rout: final.patch.Rout finalscore.R
 	$(run-R)
 
 course.grade.Rout: course.Rout courseGrade.R
-	$(run-R)
-
-## Do the same for an assignment (COVID!)
-## assign3.grade.Rout: assignscore.R
-.PRECIOUS: assign%.grade.Rout
-assign%.grade.Rout: TAmarks.Rout assignscore.R
-	$(run-R)
-
-## This takes anything with _score variables and makes a pre-Avenue csv
-## final.grade.avenue.Rout: avenueMerge.R
-## midterm2.grade.avenue.Rout: avenueMerge.R
-## assign1.grade.avenue.Rout: avenueMerge.R
-Ignore += *.avenue.Rout.csv
-%.avenue.Rout: %.Rout sheetID.Rout avenueMerge.R
 	$(run-R)
 
 ## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
