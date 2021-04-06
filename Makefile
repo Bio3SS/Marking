@@ -80,26 +80,28 @@ TAmarks.Rout: TAmarks.R sheetID.rda
 ## Web-only tests
 ## Click arrow next to quiz and choose "statistics"
 ## Download "User" statistics
-
 ## dropdir/midterm1.scores.csv ##
-## dropdir/midterm1.code.zip ##
-
-## unzip dropdir/midterm1.code.zip "*/*/*.mbox" -d . ##
-## mv */*/*.mbox midterm1.mbox ##
+## dropdir/midterm2.scores.csv ##
 
 ## Code statements download mbox using https://takeout.google.com/
+## Deselect all categories then select mail; it looks like mailboxes must be deselected by hand
+## cp dropdir/midterm1.code.zip
+## dropdir/midterm2.code.zip ##
+## unzip dropdir/midterm2.code.zip "*/*/*.mbox" -d . ##
+## mv */*/*.mbox midterm2.mbox ##
 %.code.csv: %.mbox codebox.pl
 	$(PUSH)
 
 ## Manual additions
 Sources += midterm1.honor.csv
+Sources += midterm2.honor.csv
 
-## midterm1.allcode.csv:
+## midterm2.allcode.csv:
 %.allcode.csv: %.code.csv %.honor.csv
 	$(cat)
 
 ## Check for missing and extra pledges
-## midterm1.code.Rout: code.R
+## midterm2.code.Rout: code.R
 %.code.Rout: %.allcode.csv dropdir/midterm1.scores.csv code.R
 	$(pipeR)
 
