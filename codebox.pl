@@ -15,4 +15,4 @@ while(<>){
 	$id{$_} = 1;
 }
 
-print join "\n", keys %id;
+say join "\n", keys %id;

@@ -46,6 +46,9 @@ dropdir/%:
 ## Convert to tsv for copy-paste (vim to gsheet)
 ## Match column names to previous year
 
+## Update classlist and use to ignore drops?
+## dropdir/classlist.csv
+
 ## Import TA marks (manual) and change empties to zeroes
 ## This means you should add MSAFs as NAs before processing
 ## docs has history in the unlikely event we need it
@@ -53,6 +56,8 @@ dropdir/%:
 ## https://docs.google.com/spreadsheets/d/1UNhu1yGSspssOkWVoyxcD2TE2_3i14hdLRd8d5SGbco/edit#gid=0
 ## dropdir/marks.tsv  ##
 ## 2020_version https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#2020_version
+
+## Convert (unexplained) blanks to zeroes
 Ignore += marks.tsv
 marks.tsv: dropdir/marks.tsv zero.pl ##
 	$(PUSH)
@@ -65,8 +70,9 @@ Sources += nodrops.csv
 dropdir/drops.csv: 
 	$(CP) nodrops.csv $@
 
-## Get ID info and drop the drops
-sheetID.Rout: marks.tsv dropdir/drops.csv sheetID.R
+## Merge the current classlist with the team sheet
+## Losing the drops paradigm 2021 Apr 12 (Mon)
+sheetID.Rout: sheetID.R marks.tsv dropdir/classlist.csv
 	$(pipeR)
 
 ## Parse some marks 
@@ -89,10 +95,12 @@ TAmarks.Rout: TAmarks.R sheetID.rda
 ## dropdir/midterm2.code.zip ##
 ## unzip dropdir/midterm2.code.zip "*/*/*.mbox" -d . ##
 ## mv */*/*.mbox midterm2.mbox ##
+## midterm2.code.csv: midterm2.mbox codebox.pl
+Ignore += *.code.csv
 %.code.csv: %.mbox codebox.pl
 	$(PUSH)
 
-## Manual additions
+## Manual additions to code list
 Sources += midterm1.honor.csv
 Sources += midterm2.honor.csv
 
@@ -101,24 +109,25 @@ Sources += midterm2.honor.csv
 	$(cat)
 
 ## Check for missing and extra pledges
-## midterm2.code.Rout: code.R
-%.code.Rout: %.allcode.csv dropdir/midterm1.scores.csv code.R
+## midterm2.code.Rout: code.R midterm2.allcode.csv dropdir/midterm2.scores.csv
+%.code.Rout: code.R %.allcode.csv dropdir/%.scores.csv
 	$(pipeR)
 
-## Merge spreadsheet to handle NAs
+## Merge with spreadsheet to handle NAs (MSAFs)
 ## Compare midMerge.R (the scantron, bubble-calc version)
 
-# midterm1.merge.Rout: merge.R
+# midterm2.merge.Rout: merge.R
 %.merge.Rout: merge.R %.code.rda TAmarks.rda
 	$(pipeR)
 
+# Not really feeling very into Avenue posting right now
 # Avenue-style scoring ## Need to see what works with idnum vs. macid
 ## midterm1.testscore.Rout: testscore.R
 %.testscore.Rout: testscore.R %.merge.rds
 	$(pipeR)
 
 # midterm1.testscore.avenue.Rout.csv: avenueMerge.R
-# midterm1.testscore.avenue.Rout: avenueMerge.R
+# midterm2.testscore.avenue.Rout: avenueMerge.R
 
 ######################################################################
 
