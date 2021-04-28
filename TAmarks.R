@@ -2,7 +2,7 @@ library(readr)
 library(dplyr)
 library(shellpipes)
 
-print(commandEnvironments())
+loadEnvironments()
 
 names(sheet)
 names(students)
@@ -14,6 +14,7 @@ names(students)
 tests <- (sheet 
 	%>% transmute(idnum=idnum, macid=macid
 		, midterm1=`Midterm 1`
+		, midterm2=`Midterm 2`
 	)
 )
 
@@ -21,13 +22,13 @@ summary(tests)
 
 ## This seems horrible (causes errors when I forget to switch)
 ## Figure out how to do it fancy
-assign <- (sheet 
+assigns <- (sheet 
 	%>% transmute(idnum=idnum, macid=macid
 		, assign1=`Assignment 1`
-		## , assign2=`Assignment 2`
-		## , assign3=`Assignment 3`
-		## , assign4=`Assignment 4`
+		, assign2=`Assignment 2`
+		, assign3=`Assignment 3`
+		, assign4=`Assignment 4`
 	)
 )
 
-saveVars(tests, assign)
+saveVars(tests, assigns)

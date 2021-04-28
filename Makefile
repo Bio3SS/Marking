@@ -1,4 +1,5 @@
 ## This is Bio3SS Marking, created 2020 Feb 21 (Fri)
+## Refactor (different .mk files for polls, web tests, etc?)
 
 current: target
 -include target.mk
@@ -55,7 +56,6 @@ dropdir/%:
 
 ## https://docs.google.com/spreadsheets/d/1UNhu1yGSspssOkWVoyxcD2TE2_3i14hdLRd8d5SGbco/edit#gid=0
 ## dropdir/marks.tsv  ##
-## 2020_version https://docs.google.com/spreadsheets/d/1nErh7vg1PfOS3CYmZu5tQIjT-_Hsyi77S17zh4ZzeRQ/edit#2020_version
 
 ## Convert (unexplained) blanks to zeroes
 Ignore += marks.tsv
@@ -78,7 +78,8 @@ sheetID.Rout: sheetID.R marks.tsv dropdir/classlist.csv
 ## Parse some marks 
 TAmarks.Rout: TAmarks.R sheetID.rda
 	$(pipeR)
-## Older code with some version and SA stuff; pre-pipe
+
+## Older in-person code with some version and SA stuff; pre-pipe
 ## TAmarksIP.Rout: marks.tsv sheetID.Rout TAmarksIP.R
 
 ######################################################################
@@ -88,14 +89,15 @@ TAmarks.Rout: TAmarks.R sheetID.rda
 ## Download "User" statistics
 ## dropdir/midterm1.scores.csv ##
 ## dropdir/midterm2.scores.csv ##
+## dropdir/final.scores.csv ##
 
 ## Code statements download mbox using https://takeout.google.com/
 ## Deselect all categories then select mail; it looks like mailboxes must be deselected by hand
-## cp dropdir/midterm1.code.zip
-## dropdir/midterm2.code.zip ##
-## unzip dropdir/midterm2.code.zip "*/*/*.mbox" -d . ##
-## mv */*/*.mbox midterm2.mbox ##
-## midterm2.code.csv: midterm2.mbox codebox.pl
+## dropdir/final.code.zip ##
+## unzip dropdir/final.code.zip "*/*/*.mbox" -d . ##
+## ls */*/*.mbox ##
+## mv */*/*.mbox final.mbox ##
+## final.code.csv: final.mbox codebox.pl
 Ignore += *.code.csv
 %.code.csv: %.mbox codebox.pl
 	$(PUSH)
@@ -103,26 +105,30 @@ Ignore += *.code.csv
 ## Manual additions to code list
 Sources += midterm1.honor.csv
 Sources += midterm2.honor.csv
+Sources += final.honor.csv
 
-## midterm2.allcode.csv:
+## final.allcode.csv:
 %.allcode.csv: %.code.csv %.honor.csv
 	$(cat)
 
 ## Check for missing and extra pledges
-## midterm2.code.Rout: code.R midterm2.allcode.csv dropdir/midterm2.scores.csv
+## final.code.Rout: code.R final.allcode.csv dropdir/final.scores.csv
+impmakeR += code
 %.code.Rout: code.R %.allcode.csv dropdir/%.scores.csv
 	$(pipeR)
 
 ## Merge with spreadsheet to handle NAs (MSAFs)
 ## Compare midMerge.R (the scantron, bubble-calc version)
 
-# midterm2.merge.Rout: merge.R
+# final.merge.Rout: merge.R
+impmakeR += merge
 %.merge.Rout: merge.R %.code.rda TAmarks.rda
 	$(pipeR)
 
 # Not really feeling very into Avenue posting right now
 # Avenue-style scoring ## Need to see what works with idnum vs. macid
-## midterm1.testscore.Rout: testscore.R
+## final.testscore.Rout: testscore.R
+impmakeR += testscore
 %.testscore.Rout: testscore.R %.merge.rds
 	$(pipeR)
 
@@ -133,11 +139,13 @@ Sources += midterm2.honor.csv
 
 ## What about posting assignment marks? I used to be against this
 ## Students can contact TAs for assignment marks and feedback?
+## Maybe better to get more Avenue-ish (i.e., open) going forward
 
 ## Stopped in the middle! 2021 Mar 03 (Wed)
 
 ## Do the same for an assignment (COVID!)
 ## assign1.grade.Rout: assignscore.R
+impmakeR += grade
 .PRECIOUS: assign%.grade.Rout
 assign%.grade.Rout: TAmarks.rda assignscore.R
 	$(pipeR)
@@ -152,6 +160,7 @@ assign%.grade.Rout: TAmarks.rda assignscore.R
 ## midterm2.grade.avenue.Rout: avenueMerge.R
 ## assign1.grade.avenue.Rout: avenueMerge.R
 Ignore += *.avenue.Rout.csv
+impmakeR += avenue
 %.avenue.Rout: %.rds sheetID.rda avenueMerge.R
 	$(run-R)
 
@@ -190,7 +199,7 @@ Ignore += *.avenue.csv
 	$(PUSH)
 
 ## Click "import"
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=315235
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=371137
 
 ######################################################################
 
@@ -200,24 +209,26 @@ Ignore += *.avenue.csv
 ## 	https://www.polleverywhere.com/reports
 ## 	Create reports
 ## 	Participant response history
-## 	Select groups for this year
+## 	Select groups for this year (include one fake macid question!)
 ## 	Download csv (lower right)
 
 ## To repeat:
 ##		Reports / select report you want / Update reports (next to Current Run at top)
 
-##	downcall dropdir/polls.csv ##
+##	dropdir/polls.csv ##
 
 ######################################################################
 
 # Read the polls into three variables
 
 polls.Rout: dropdir/polls.csv polls.R
+	$(wrapR)
 
 # Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
 # Treat the question that matches "macid" as a fake (if present)
 # and use it to help with ID
-parsePolls.Rout: polls.Rout parsePolls.R
+parsePolls.Rout: polls.rda parsePolls.R
+	$(wrapR)
 
 # Calculate a pollScore and combine with the extraScore made by hand
 # The csv is where to look for orphan lines and try to figure out if people are missing points they should get
@@ -229,46 +240,43 @@ dropdir/%.ssv:
 	$(CP) $*.ssv $@
 ## del dropdir/extraPolls.ssv ##
 
-pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
-pollScore.Rout.csv: 
+pollScore.Rout: extraPolls.ssv parsePolls.rda pollScore.R
+	$(pipeR)
+## pollScore.Rout.csv:  pollScore.R
 
 ## Provisional poll scores
 
-pollScore.avenue.Rout: avenueMerge.R
-pollScore.avenue.Rout.csv: avenueMerge.R
+## Some sort of chaining problem here; impmakeR?
+## pollScore.avenue.Rout: avenueMerge.R
+## pollScore.avenue.csv: avenueNA.pl
 
 # Ask people to answer a fake question with "macid" in it
 # in all the ways that they answered the polls
 # Then save people manually in column 3 of .ssv
 
-# Merge to save people who repeatedly use student number
-## Why not working? 2019 Apr 29 (Mon)
-## Patched, but not doing anything. Because people know what macid is now? remove?
-pollScorePlus.Rout: pollScore.Rout sheetID.Rout pollScorePlus.R
-
-## import
-
-pollScorePlus.avenue.Rout: avenueMerge.R
-pollScorePlus.avenue.Rout.csv: avenueMerge.R
-
-pollScorePlus.avenue.csv: avenueNA.pl
+## pollScorePlus was an attempt to rescue using student number
+## Ditching becasue it confused me 2021 Apr 28 (Wed)
 
 ######################################################################
 
 ## Final exam and final grade
 ## Regular scantron-exam stuff still in content.mk
-
 final.patch.Rout: final_mark.csv finalAvenue.R
 	$(run-R)
 
 ## Read and combine different mark sources
 
-tests.Rout: TAmarks.Rout midterm1.merge.Rout.envir midterm2.merge.Rout.envir final.patch.Rout.envir tests.R
+tests.Rout: tests.R TAmarks.rda midterm1.merge.rds midterm2.merge.rds final.merge.rds
+	$(pipeR)
+
+gradeFuns.Rout: gradeFuns.R
+	$(wrapR)
 
 ## Final grade: 
 ## Check weightings, number of assignments, components, etc.
 ## course.Rout.csv: course.R
-course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
+course.Rout: gradeFuns.rda tests.rds pollScore.rds TAmarks.rda course.R
+	$(pipeR)
 
 ######################################################################
 
@@ -279,7 +287,9 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## You can download as EXCEL (upper right of roster display)
 ## and upload as CSV
 
+dropdir/mosaic.xls: HTML document, ASCII text
 ## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
+## FAiled again 2021 Apr 28 (Wed) (readxl)
 ## downcall dropdir/mosaic.csv
 ## It would be better to change some of the code here and keep the
 ## student numbers as strings
@@ -287,7 +297,8 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## CHECK class number (needs to be cribbed from Mosaic and entered here)
 ## Check dropCandidates in Rout
 
-mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
+mosaic_grade.Rout: dropdir/mosaic.csv course.rds mosaic_grade.R
+	$(pipeR)
 ## mosaic_grade.Rout.csv: mosaic_grade.R
 
 ## Upload this .csv to mosaic

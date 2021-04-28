@@ -1,27 +1,29 @@
 library(dplyr)
+library(tidyr)
 library(stringr)
-objects()
+library(shellpipes)
 
-tests <- students
+loadEnvironments()
 
-for (n in names(envir_list)){
-	short <- (n
-		%>% str_replace(".merge", "")
-		%>% str_replace(".patch", "")
-		%>% str_replace("$", ".test")
+testscores <- (rdsReadList()
+	%>% bind_rows(.id="Q")
+	## %>% mutate(Q = str_replace(Q, ".merge", ""))
+	%>% pivot_wider(names_from=Q, values_from=score)
+)
+
+summary(testscores)
+summary(tests)
+
+## Add MSAF NAs for midterms; eliminate all NAs for final
+tests <- (left_join(tests, testscores)
+	%>% transmute(
+		macid, idnum
+		, midterm1 = ifelse(is.na(midterm1), NA, midterm1.merge)
+		, midterm2 = ifelse(is.na(midterm2), NA, midterm2.merge)
+		, final= ifelse(is.na(final.merge), 0, final.merge)
 	)
-	tests <- (left_join(tests,
-		(envir_list[[n]]$scores
-			%>% transmute(idnum=idnum, bestScore=bestScore)
-			%>% setNames(c("idnum", short))
-		)
-	))
-}
-
-tests <- (tests 
-	%>% mutate(final.test = ifelse(is.na(final.test), 0, final.test))
 )
 
 summary(tests)
 
-# rdsave(tests)
+rdsSave(tests)

@@ -1,34 +1,27 @@
 library(dplyr)
 library(readr)
+library(shellpipes)
 
-Class <- 10646
+Class <- 8297 ## 2021 Apr 28 (Wed)
 
-roster <- read_csv(input_files[[1]])
+roster <- csvRead()
 names(roster) <- gsub(" ", "_", names(roster))
+print(roster$Email)
 
+course <- rdsRead()
 summary(course)
-course <- (course
-	%>% mutate(idnum = gsub("#", "", idnum)
-		, courseGrade=courseGrade
-	)
+
+roster <- (roster
+	%>% mutate(macid = sub("@.*", "", Email))
+	%>% left_join(course)
 )
 
-summary(course)
-
 summary(roster)
 
-## This mutate seems bad; if we could read the csv as strings in the first place it would be better.
-## Check strings as factors if you do that
+print(roster %>% filter(is.na(courseGrade)))
+
 roster <- (roster
-	%>% mutate(idnum=sprintf("%09d", as.numeric(ID))) 
-	%>% left_join(course)
 	%>% transmute(Class=Class, idnum, mark=courseGrade)
-) %>% write_csv(csvname, col_names=FALSE)
+)
 
-summary(roster)
-
-print(dropCandidates <- roster %>% filter(is.na(mark)))
-
-(roster
-	%>% filter(!is.na(mark))
-) %>% write_csv(csvname, col_names=FALSE)
+csvSave(roster)

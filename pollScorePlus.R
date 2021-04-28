@@ -1,4 +1,7 @@
 library(dplyr)
+library(shellpipes)
+
+loadEnvironments()
 
 students <- (students
 	%>% mutate (idstring = as.character(idnum))
@@ -22,4 +25,4 @@ scores <- (scores
 
 summary(scores)
 
-# rdsave (scores)
+rdsSave (scores)
