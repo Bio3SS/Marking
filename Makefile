@@ -295,7 +295,6 @@ dropdir/mosaic.xls: HTML document, ASCII text
 ## student numbers as strings
 
 ## CHECK class number (needs to be cribbed from Mosaic and entered here)
-## Check dropCandidates in Rout
 
 mosaic_grade.Rout: dropdir/mosaic.csv course.rds mosaic_grade.R
 	$(pipeR)
@@ -303,8 +302,6 @@ mosaic_grade.Rout: dropdir/mosaic.csv course.rds mosaic_grade.R
 
 ## Upload this .csv to mosaic
 ## Faculty center, online grading tab
-## ~/Downloads/grade_guide.pdf ##
-## There is no guidance about students with incomplete marks; let's see what happens
 
 ## Copy grades to dropdir for diffing:
 #### cp mosaic_grade.Rout.csv dropdir ##
