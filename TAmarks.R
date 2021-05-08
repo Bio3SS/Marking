@@ -31,4 +31,6 @@ assigns <- (sheet
 	)
 )
 
+print(assigns %>% filter(assign1*assign2*assign3*assign4==0))
+
 saveVars(tests, assigns)

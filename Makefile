@@ -75,7 +75,7 @@ dropdir/drops.csv:
 sheetID.Rout: sheetID.R marks.tsv dropdir/classlist.csv
 	$(pipeR)
 
-## Parse some marks 
+## Parse some marks; check for zeroes
 TAmarks.Rout: TAmarks.R sheetID.rda
 	$(pipeR)
 
@@ -152,6 +152,8 @@ assign%.grade.Rout: TAmarks.rda assignscore.R
 
 ######################################################################
 
+## Some of this is scantron stuff, I guess.
+
 ## Prep for Avenue
 ## merges into test and assignment pipelines being developed above
 ## there's also stuff below and in content.mk!!
@@ -199,7 +201,7 @@ Ignore += *.avenue.csv
 	$(PUSH)
 
 ## Click "import"
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=371137
+## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
 
 ######################################################################
 
@@ -276,6 +278,11 @@ gradeFuns.Rout: gradeFuns.R
 ## Check weightings, number of assignments, components, etc.
 ## course.Rout.csv: course.R
 course.Rout: gradeFuns.rda tests.rds pollScore.rds TAmarks.rda course.R
+	$(pipeR)
+
+## 2021 special-purpose (final grades to Avenue)
+## courseAvenue.Rout.csv: courseAvenue.R
+courseAvenue.Rout: courseAvenue.R course.rds
 	$(pipeR)
 
 ######################################################################

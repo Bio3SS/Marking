@@ -21,7 +21,10 @@ summary(roster)
 print(roster %>% filter(is.na(courseGrade)))
 
 roster <- (roster
-	%>% transmute(Class=Class, idnum, mark=courseGrade)
+	%>% transmute(Class=Class
+		, ID = sub("#", "", idnum)
+		, mark=courseGrade
+	) %>% filter(!is.na(ID))
 )
 
-csvSave(roster)
+csvSave(roster, col_names=FALSE)
