@@ -39,6 +39,7 @@ dropdir/%:
 
 ## Spreadsheets with TA marks from HWs and SAs
 ## Make original spreadsheet from Avenue by downloading grades
+## Need to do setup wizard, then Enter/Export?
 ## It doesn't work to go via classlist
 ## This apparently now (2020) prefixes the IDs with #; maybe make use of this convention
 ## 2021: NOw it prefixes the macids, too!
