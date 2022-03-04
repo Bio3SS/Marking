@@ -23,8 +23,9 @@ Sources += $(wildcard *.R *.pl)
 ## It has subdirectories for disks from MPS
 
 Ignore += dropdir
-## mkdir /home/dushoff/Dropbox/courses/3SS/2021
-dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2021
+## mkdir /home/dushoff/Dropbox/courses/3SS/2022 ##
+dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
+dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
 dropdir:
 	$(linkdirname)
 dropdir/%: 
