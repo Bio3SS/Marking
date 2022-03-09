@@ -2,25 +2,6 @@ pardirs += Tests
 
 Ignore += $(pardirs)
 
-## Notes on scantron files
-Sources += media.md
-
-## Add rows manually to the .tsv file if sheets don't scan
-## Or for deferred finals 
-## scanning
-## dropdir/midterm2.manual.tsv:
-dropdir/%.manual.tsv:
-	$(touch)
-
-## Student itemized responses
-## Script reads manual version first, ignores repeats
-## Necessitated by Daniel Park!
-## Match .dlm format
-Ignore += *.responses.tsv
-## midterm2.responses.tsv: rmerge.pl
-%.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
-	$(PUSH)
-
 ## Our scores
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
@@ -116,3 +97,100 @@ Ignore += *.avenue.Rout.csv
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
+
+######################################################################
+
+## Dumping to clean Makefile 2022 Mar 08 (Tue)
+
+## Spreadsheets with TA marks from HWs and SAs
+## Make original spreadsheet from Avenue by downloading grades
+## Need to do setup wizard, then Enter/Export?
+## It doesn't work to go via classlist
+## This apparently now (2020) prefixes the IDs with #; maybe make use of this convention
+## 2021: NOw it prefixes the macids, too!
+## Download (with first/last name)
+## GEt rid of end field, extra #
+## Convert to tsv for copy-paste (vim to gsheet)
+## Match column names to previous year
+
+## Import TA marks (manual) and change empties to zeroes
+## This means you should add MSAFs as NAs before processing
+## docs has history in the unlikely event we need it
+
+## Merge the current classlist with the team sheet
+## Losing the drops paradigm 2021 Apr 12 (Mon)
+## Not doing this right now. 2022 Mar 08 (Tue)
+sheetID.Rout: sheetID.R marks.tsv dropdir/classlist.csv
+	$(pipeR)
+TAmarks.Rout: TAmarks.R sheetID.rda
+	$(pipeR)
+
+## Web-only tests
+## Click arrow next to quiz and choose "statistics"
+## Download "User" statistics
+## dropdir/midterm1.scores.csv ##
+## dropdir/midterm2.scores.csv ##
+## dropdir/final.scores.csv ##
+
+## Code statements download mbox using https://takeout.google.com/
+## Deselect all categories then select mail; it looks like mailboxes must be deselected by hand
+## dropdir/final.code.zip ##
+## unzip dropdir/final.code.zip "*/*/*.mbox" -d . ##
+## ls */*/*.mbox ##
+## mv */*/*.mbox final.mbox ##
+## final.code.csv: final.mbox codebox.pl
+Ignore += *.code.csv
+%.code.csv: %.mbox codebox.pl
+	$(PUSH)
+
+## Manual additions to code list
+Sources += midterm1.honor.csv
+Sources += midterm2.honor.csv
+Sources += final.honor.csv
+
+## final.allcode.csv:
+%.allcode.csv: %.code.csv %.honor.csv
+	$(cat)
+
+## Check for missing and extra pledges
+## final.code.Rout: code.R final.allcode.csv dropdir/final.scores.csv
+impmakeR += code
+%.code.Rout: code.R %.allcode.csv dropdir/%.scores.csv
+	$(pipeR)
+
+## Merge with spreadsheet to handle NAs (MSAFs)
+## Compare midMerge.R (the scantron, bubble-calc version)
+
+# final.merge.Rout: merge.R
+impmakeR += merge
+%.merge.Rout: merge.R %.code.rda TAmarks.rda
+	$(pipeR)
+
+# Not really feeling very into Avenue posting right now
+# Avenue-style scoring ## Need to see what works with idnum vs. macid
+## final.testscore.Rout: testscore.R
+impmakeR += testscore
+%.testscore.Rout: testscore.R %.merge.rds
+	$(pipeR)
+
+# midterm1.testscore.avenue.Rout.csv: avenueMerge.R
+# midterm2.testscore.avenue.Rout: avenueMerge.R
+
+######################################################################
+
+######################################################################
+
+## Some of this is scantron stuff, I guess.
+
+## Prep for Avenue
+## merges into test and assignment pipelines being developed above
+## there's also stuff below and in content.mk!!
+## This takes anything with _score variables and makes a pre-Avenue csv
+## final.grade.avenue.Rout: avenueMerge.R
+## midterm2.grade.avenue.Rout: avenueMerge.R
+## assign1.grade.avenue.Rout: avenueMerge.R
+Ignore += *.avenue.Rout.csv
+impmakeR += avenue
+%.avenue.Rout: %.rds sheetID.rda avenueMerge.R
+	$(run-R)
+
