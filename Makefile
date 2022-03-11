@@ -97,6 +97,8 @@ Ignore += *.avenue.csv
 ## Notes
 Sources += media.md
 
+pardirs += Tests
+
 ## Add rows manually to the .tsv file if sheets don't scan
 ## dropdir/midterm2.manual.tsv:
 dropdir/%.manual.tsv:
@@ -113,12 +115,6 @@ Ignore += *.responses.tsv
 
 ######################################################################
 
-pardirs += Tests
-
-Ignore += $(pardirs)
-
-######################################################################
-
 ## Our scores
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
@@ -127,11 +123,16 @@ Ignore += $(wildcard *.scoring.csv)
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 
-## Score the students
+## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
-## midterm2.scores.Rout:  scores.R
+## midterm1.scores.rtmp:  scores.R
+## midterm1.scores.Rout:  scores.R
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(run-R)
+
+## midterm1.ourscore.Rout:  ourscore.R midterm1.responses.tsv midterm1.scoring.csv
+%.ourscore.Rout: ourscore.R %.responses.tsv %.scoring.csv
+	$(pipeR)
 
 ## Compare with office scores
 ## Scantron-office scores
@@ -257,6 +258,8 @@ grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
 	$(diff)
 
 ######################################################################
+
+Ignore += $(pardirs)
 
 ### Makestuff
 
