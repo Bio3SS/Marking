@@ -120,6 +120,8 @@ Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
 ## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
 ## midterm1.scoring.csv:
+midterm1.scoring.csv: Tests/midterm1.scantron.csv scoring.pl
+	$(PUSH)
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 
@@ -129,9 +131,6 @@ Ignore += $(wildcard *.scoring.csv)
 ## midterm1.scores.Rout:  scores.R
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
-
-## midterm1.ourscore.Rout:  ourscore.R midterm1.responses.tsv midterm1.scoring.csv
-%.ourscore.Rout: ourscore.R %.responses.tsv %.scoring.csv
 
 ## Compare with office scores
 ## Scantron-office scores
