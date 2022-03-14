@@ -128,11 +128,10 @@ Ignore += $(wildcard *.scoring.csv)
 ## midterm1.scores.rtmp:  scores.R
 ## midterm1.scores.Rout:  scores.R
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
-	$(run-R)
+	$(pipeR)
 
 ## midterm1.ourscore.Rout:  ourscore.R midterm1.responses.tsv midterm1.scoring.csv
 %.ourscore.Rout: ourscore.R %.responses.tsv %.scoring.csv
-	$(pipeR)
 
 ## Compare with office scores
 ## Scantron-office scores
