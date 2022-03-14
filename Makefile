@@ -119,9 +119,7 @@ Ignore += *.responses.tsv
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
 ## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
-## midterm1.scoring.csv:
-midterm1.scoring.csv: Tests/midterm1.scantron.csv scoring.pl
-	$(PUSH)
+## midterm1.scoring.csv: Tests/midterm1.scantron.csv scoring.pl
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 
