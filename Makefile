@@ -115,7 +115,7 @@ Ignore += *.responses.tsv
 
 ######################################################################
 
-## Our scores
+## Score the tests here (and compare with scantron score)
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
 ## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
@@ -138,9 +138,19 @@ Ignore += *.office.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
 ## 2020 Feb 24 (Mon): Lots of version problems ☹
-## midterm2.scorecomp.Rout: scorecomp.R
-%.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
-	$(run-R)
+## midterm1.scorecomp.Rout: scorecomp.R
+%.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
+	$(pipeR)
+
+######################################################################
+
+## Merge MC with SA scores
+
+## midterm1.merge.Rout: midMerge.R
+midterm%.merge.Rout: midMerge.R midterm%.scorecomp.rds marks.rds
+	$(pipeR)
+
+######################################################################
 
 ## Polls
 
