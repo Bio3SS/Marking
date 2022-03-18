@@ -283,6 +283,14 @@ grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
 	$(diff)
 
 ######################################################################
+## Fix stats.html weirdness?
+
+Ignore += questions*.html
+## questions1.html: stats.pl
+questions%.html: stats.pl dropdir/midterm1_disk/QuestionStatistics.html
+	$(PUSH)
+
+######################################################################
 
 Ignore += $(pardirs)
 
