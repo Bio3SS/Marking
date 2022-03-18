@@ -99,7 +99,7 @@ Sources += media.md
 
 pardirs += Tests
 
-## Add rows manually to the .tsv file if sheets don't scan
+## Add rows manually to the .tsv file if sheets don't scan!!!!
 ## dropdir/midterm2.manual.tsv:
 dropdir/%.manual.tsv:
 	$(touch)
@@ -127,11 +127,17 @@ Ignore += $(wildcard *.scoring.csv)
 ## How many have weird bubble versions? How many have best ≠ bubble?
 ## midterm1.scores.rtmp:  scores.R
 ## midterm1.scores.Rout:  scores.R
+impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
 
-## Compare with office scores
-## Scantron-office scores
+impmakeR += classscores
+## midterm1.classscores.Rout: classscores.R scores.R
+%.classscores.Rout: classscores.R %.scores.rds dropdir/classlist.csv
+	$(pipeR)
+
+## Compare with office scores NOT part of current pipeline, but take a look
+## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
 ## midterm1.office.csv: 
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
@@ -145,9 +151,11 @@ Ignore += *.office.csv
 ######################################################################
 
 ## Merge MC with SA scores
+## Who has an SA but not MC? Use to fix errors
 
+impmakeR += merge
 ## midterm1.merge.Rout: midMerge.R
-midterm%.merge.Rout: midMerge.R midterm%.scorecomp.rds marks.rds
+midterm%.merge.Rout: midMerge.R midterm%.classscores.rds marks.rds
 	$(pipeR)
 
 ######################################################################

@@ -13,10 +13,11 @@ test <- paste0("M", pipeStar())
 marks <- rdsRead("marks")
 scores <- rdsRead("score")
 
-names(scores)
+## names(scores)
+## names(marks)
 
 scores <- (marks
-	%>% left_join(scores, by = c("Username"="macid"))
+	%>% left_join(scores, by = "Username")
 	%>% setNames(sub(test, "", names(.)))
 	%>% select(Username, idnum, SA, Ver, bubVer, bestVer, bestScore)
 )
@@ -30,13 +31,16 @@ print(scores
 print(filter(scores, is.na(SA) & !is.na(bestScore)))
 print(filter(scores, !is.na(SA) & is.na(bestScore)))
 
-quit()
-
 scores <- (scores 
-	%>% mutate(
-		bestScore = ifelse((is.na(bestScore) & sa==0), 0, bestScore)
-		, bestScore = bestScore+sa
-	)
+	%>% rename(MC=bestScore)
+	%>% mutate(NULL
+		, total = ifelse((is.na(MC) & SA==0), 0, MC+SA)
+	) %>% select(
+		Username, SA, MC, total
+	) %>% filter(!is.na(total))
+
 )
 
 print(summary(scores))
+
+rdsSave(scores)
