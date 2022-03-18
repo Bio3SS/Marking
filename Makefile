@@ -22,6 +22,7 @@ autopipeR = defined
 
 ## dropdir is for sensitive products that I want to back up
 ## It has subdirectories for disks from MPS
+## It could be better to have a private-subrepo for stuff I do by hand …
 
 Ignore += dropdir
 ## mkdir /home/dushoff/Dropbox/courses/3SS/2022 ##
@@ -36,6 +37,8 @@ dropdir/%:
 ## cd dropdir/midterm1_disk/ && lastunzip ##
 
 ######################################################################
+
+## Marks (does assignments automatically)
 
 ## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/
 ## dropdir/marks.tsv  ##
@@ -143,7 +146,6 @@ Ignore += *.office.csv
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## 2020 Feb 24 (Mon): Lots of version problems ☹
 ## midterm1.scorecomp.Rout: scorecomp.R
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
 	$(pipeR)
@@ -152,11 +154,20 @@ Ignore += *.office.csv
 
 ## Merge MC with SA scores
 ## Who has an SA but not MC? Use to fix errors
+## Also doing a version of avenue csv here
 
 impmakeR += merge
 ## midterm1.merge.Rout: midMerge.R
 midterm%.merge.Rout: midMerge.R midterm%.classscores.rds marks.rds
 	$(pipeR)
+
+impmakeR += grade
+## midterm1.grade.Rout: midtermGrade.R
+midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
+	$(pipeR)
+
+## midterm1.avenue.Rout.csv: avenue.R
+
 
 ######################################################################
 

@@ -38,9 +38,9 @@ scores <- (scores
 	) %>% select(
 		Username, SA, MC, total
 	) %>% filter(!is.na(total))
-
 )
 
-print(summary(scores))
+summary(scores)
 
 rdsSave(scores)
+
