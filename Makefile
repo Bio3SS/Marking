@@ -71,6 +71,7 @@ marks.Rout: marks.R marks.tsv
 
 impmakeR += grade
 ## assign1.grade.Rout: assignscore.R
+impmakeR += grade
 .PRECIOUS: assign%.grade.Rout
 assign%.grade.Rout: marks.rds assignscore.R
 	$(pipeR)
@@ -139,6 +140,7 @@ impmakeR += classscores
 %.classscores.Rout: classscores.R %.scores.rds dropdir/classlist.csv
 	$(pipeR)
 
+## Did make just $#@!ing delete this not-made csv file from Dropbox??
 ## Compare with office scores NOT part of current pipeline, but take a look
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
@@ -147,6 +149,7 @@ Ignore += *.office.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
 ## midterm1.scorecomp.Rout: scorecomp.R
+impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
 	$(pipeR)
 
@@ -158,6 +161,7 @@ Ignore += *.office.csv
 
 impmakeR += merge
 ## midterm1.merge.Rout: midMerge.R
+impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.classscores.rds marks.rds
 	$(pipeR)
 
@@ -167,7 +171,6 @@ midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 	$(pipeR)
 
 ## midterm1.avenue.Rout.csv: avenue.R
-
 
 ######################################################################
 
