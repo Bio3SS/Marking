@@ -23,14 +23,12 @@ autopipeR = defined
 ## dropdir is for sensitive products that I want to back up
 ## It has subdirectories for disks from MPS
 ## It could be better to have a private-subrepo for stuff I do by hand …
+## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
 
 Ignore += dropdir
-## mkdir /home/dushoff/Dropbox/courses/3SS/2022 ##
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
 dropdir:
 	$(linkdirname)
-dropdir/%: 
-	$(MAKE) dropdir
 
 ## mkdir dropdir/midterm1_disk/ ##
 ## downcall  dropdir/midterm1_disk/ ##
