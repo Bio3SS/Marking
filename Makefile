@@ -89,7 +89,7 @@ TAmarks.Rout: TAmarks.R sheetID.rda
 ## Download "User" statistics
 ## dropdir/midterm1.scores.csv ##
 ## dropdir/midterm2.scores.csv ##
-## dropdir/final.scores.csv ##
+## dropdir/final.scores.csv ## khana203 added by hand 2021 Jun 25 (Fri)
 
 ## Code statements download mbox using https://takeout.google.com/
 ## Deselect all categories then select mail; it looks like mailboxes must be deselected by hand
