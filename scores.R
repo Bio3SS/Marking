@@ -1,18 +1,19 @@
-library(readr)
 library(dplyr)
+library(shellpipes)
 
-## Read stuff in
-responses <- read_tsv(grep("tsv", input_files, value=TRUE)
-	, col_names=FALSE
-)
+responses <- tsvRead(col_names=FALSE)
+print (responses%>% mutate_if(is.character, as.factor) %>% summary)
 
-key <- read_csv(grep("csv", input_files, value=TRUE))
+key <- csvRead()
+summary(key)
 
+## Code letters into numbers for answer; not clear why I did this.
 answers <- as.matrix(responses[-(1:2)])
 answers <- matrix(match(answers, LETTERS), nrow=nrow(answers))
 dim(answers)
 summary(answers)
 
+## Identify unique versions and loop over them to calculate scores
 versions = unique(key$Version)
 scores <- matrix(nrow=nrow(answers), ncol=length(versions))
 for (ver in versions){
@@ -43,14 +44,11 @@ summary(bestVer)
 bubbleVersion <- pull(responses, X2)
 print(table(bubbleVersion))
 
-## Um...
-## bubbleVersion[bubbleVersion==44] <- 4
-
 print(sum(bubbleVersion != bestVer))
-print(sum(bubbleVersion < 0))
+print(sum(bubbleVersion <= 0))
 
 verScore <- sapply(1:nrow(scores), function(i){
-	if (bubbleVersion[[i]]<0) return(0)
+	if (bubbleVersion[[i]]<=0) return(0)
 	return(scores[[i, bubbleVersion[[i]]]])
 })
 
@@ -64,4 +62,4 @@ scores <- (responses
 )
 summary(scores)
 
-# rdsave(scores)
+rdsSave(scores)

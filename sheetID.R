@@ -15,5 +15,6 @@ names(sheet)
 
 students <- sheet %>% select(idnum, macid)
 head(students)
+dim(students)
 
 saveVars(students, sheet)

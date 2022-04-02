@@ -1,18 +1,21 @@
 library(dplyr)
 library(shellpipes)
 
-loadEnvironments()
+marks <- rdsRead()
 
-aname <- gsub("[.].*", "", targetname())
+
+aname <- paste0("A", pipeStar())
 ascore <- paste0(aname , "_score")
+summary(marks)
 
-summary(assign)
+print(aname)
+print(ascore)
 
-quit()
-
-scores <- (assign
-	%>% select(idnum, !!aname)
+scores <- (marks
+	%>% select(Username, !!aname)
 	%>% rename(!!ascore := !!aname)
 )
 
 summary(scores)
+
+rdsSave(scores)

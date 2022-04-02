@@ -1,46 +1,46 @@
-library(readr)
+## completely remodeling 2022 Mar 17 (Thu)
+## Also dropped some "patch" code for students who bubble their idno wrong
+## see content.mk
+
 library(dplyr)
 
+library(shellpipes)
+
 ## Pull midterm number from target name
-num <- gsub("[[:alpha:].]", "", rtargetname)
 
-## Use right_join to drop students dropped from TAmarks
-## Need to track students who didn't write, and confirm MSAF NAs
-scores <- (scores 
-	%>% right_join(sa
-		%>% setNames(sub(num, "_curr", names(.)))
-		%>% transmute(idnum=idnum,sa=sa_curr, taVer=taVer_curr)
-	)
-	%>% mutate(bubVer = ifelse(bubVer==-1, NA, bubVer)
-		## , bubVer = ifelse(is.na(bubVer), taVer, bubVer)
-	)
+test <- paste0("M", pipeStar())
+
+marks <- rdsRead("marks")
+scores <- rdsRead("score")
+
+## names(scores)
+## names(marks)
+
+scores <- (marks
+	%>% left_join(scores, by = "Username")
+	%>% setNames(sub(test, "", names(.)))
+	%>% select(Username, idnum, SA, Ver, bubVer, bestVer, bestScore)
 )
-head(scores)
-summary(scores)
 
-## This code is cumbersome, but I'm trying to remember to use NAs 
-## in a principled fashion
-
-## Mismatches
-print(filter(scores, (
-	(!is.na(taVer)) & (taVer != bubVer)
-	| (!is.na(bubVer) & (bestVer != bubVer))
-	| (!is.na(verScore) & (verScore>0) & (verScore != bestScore))
-)))
-
-print(filter(scores, 
-	is.na(bubVer) & !is.na(bestScore)
-))
+## Version problems
+print(scores 
+	%>% filter(!is.na(Ver) & (Ver!=bubVer) | (Ver != bestVer))
+)
 
 ## Half tests?
-print(filter(scores, is.na(bestScore)))
-print(filter(scores, is.na(sa)))
+print(filter(scores, is.na(SA) & !is.na(bestScore)))
+print(filter(scores, !is.na(SA) & is.na(bestScore)))
 
 scores <- (scores 
-	%>% mutate(
-		bestScore = ifelse((is.na(bestScore) & sa==0), 0, bestScore)
-		, bestScore = bestScore+sa
-	)
+	%>% rename(MC=bestScore)
+	%>% mutate(NULL
+		, total = ifelse((is.na(MC) & SA==0), 0, MC+SA)
+	) %>% select(
+		Username, SA, MC, total
+	) %>% filter(!is.na(total))
 )
 
-print(summary(scores))
+summary(scores)
+
+rdsSave(scores)
+

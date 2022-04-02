@@ -11,180 +11,75 @@ vim_session:
 
 ######################################################################
 
-# Content
-
+## Older rules (moving back and forth 2022 Mar 10 (Thu))
 Sources += content.mk
 
 Sources += $(wildcard *.R *.pl)
+
+autopipeR = defined
 
 ######################################################################
 
 ## dropdir is for sensitive products that I want to back up
 ## It has subdirectories for disks from MPS
+## It could be better to have a private-subrepo for stuff I do by hand …
+## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
 
 Ignore += dropdir
-## mkdir /home/dushoff/Dropbox/courses/3SS/2021
-dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2021
+dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
 dropdir:
 	$(linkdirname)
-dropdir/%: 
-	$(MAKE) dropdir
 
-## mkdir /home/dushoff/Dropbox/courses/3SS/2020/final_disk ##
-## /bin/cp -r /media/dushoff/*/*/* dropdir/final_disk/ ##
 ## mkdir dropdir/midterm1_disk/ ##
 ## downcall  dropdir/midterm1_disk/ ##
+## cd dropdir/midterm1_disk/ && lastunzip ##
 
 ######################################################################
 
-## Spreadsheets with TA marks from HWs and SAs
-## Make original spreadsheet from Avenue by downloading grades
-## It doesn't work to go via classlist
-## This apparently now (2020) prefixes the IDs with #; maybe make use of this convention
-## 2021: NOw it prefixes the macids, too!
-## Download (with first/last name)
-## GEt rid of end field, extra #
-## Convert to tsv for copy-paste (vim to gsheet)
-## Match column names to previous year
+## Marks (does assignments automatically)
 
-## Update classlist and use to ignore drops?
-## dropdir/classlist.csv
-
-## Import TA marks (manual) and change empties to zeroes
-## This means you should add MSAFs as NAs before processing
-## docs has history in the unlikely event we need it
-
-## https://docs.google.com/spreadsheets/d/1UNhu1yGSspssOkWVoyxcD2TE2_3i14hdLRd8d5SGbco/edit#gid=0
+## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/
 ## dropdir/marks.tsv  ##
 
 ## Convert (unexplained) blanks to zeroes
+## Note: this now affects notes, too.
 Ignore += marks.tsv
 marks.tsv: dropdir/marks.tsv zero.pl ##
 	$(PUSH)
 
-## Parse out TAmarks, drop students we think have dropped
-## Used Avenue import info; this could be improved by starting from that
-## Pull a subset of just student info
-## 2021 Feb 15 (Mon) Trying to modularize
-Sources += nodrops.csv
-dropdir/drops.csv: 
-	$(CP) nodrops.csv $@
-
-## Merge the current classlist with the team sheet
-## Losing the drops paradigm 2021 Apr 12 (Mon)
-sheetID.Rout: sheetID.R marks.tsv dropdir/classlist.csv
-	$(pipeR)
-
-## Parse some marks; check for zeroes
-TAmarks.Rout: TAmarks.R sheetID.rda
-	$(pipeR)
-
-## Older in-person code with some version and SA stuff; pre-pipe
-## TAmarksIP.Rout: marks.tsv sheetID.Rout TAmarksIP.R
+## Parse the marks sheet (builds through semester as marks are added)
+marks.Rout: marks.R marks.tsv
 
 ######################################################################
 
-## Web-only tests
-## Click arrow next to quiz and choose "statistics"
-## Download "User" statistics
-## dropdir/midterm1.scores.csv ##
-## dropdir/midterm2.scores.csv ##
-## dropdir/final.scores.csv ## khana203 added by hand 2021 Jun 25 (Fri)
+## Make classlist from Avenue by downloading grades
+## Need to do setup wizard, then Enter/Export?
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=413706
 
-## Code statements download mbox using https://takeout.google.com/
-## Deselect all categories then select mail; it looks like mailboxes must be deselected by hand
-## dropdir/final.code.zip ##
-## unzip dropdir/final.code.zip "*/*/*.mbox" -d . ##
-## ls */*/*.mbox ##
-## mv */*/*.mbox final.mbox ##
-## final.code.csv: final.mbox codebox.pl
-Ignore += *.code.csv
-%.code.csv: %.mbox codebox.pl
-	$(PUSH)
-
-## Manual additions to code list
-Sources += midterm1.honor.csv
-Sources += midterm2.honor.csv
-Sources += final.honor.csv
-
-## final.allcode.csv:
-%.allcode.csv: %.code.csv %.honor.csv
-	$(cat)
-
-## Check for missing and extra pledges
-## final.code.Rout: code.R final.allcode.csv dropdir/final.scores.csv
-impmakeR += code
-%.code.Rout: code.R %.allcode.csv dropdir/%.scores.csv
-	$(pipeR)
-
-## Merge with spreadsheet to handle NAs (MSAFs)
-## Compare midMerge.R (the scantron, bubble-calc version)
-
-# final.merge.Rout: merge.R
-impmakeR += merge
-%.merge.Rout: merge.R %.code.rda TAmarks.rda
-	$(pipeR)
-
-# Not really feeling very into Avenue posting right now
-# Avenue-style scoring ## Need to see what works with idnum vs. macid
-## final.testscore.Rout: testscore.R
-impmakeR += testscore
-%.testscore.Rout: testscore.R %.merge.rds
-	$(pipeR)
-
-# midterm1.testscore.avenue.Rout.csv: avenueMerge.R
-# midterm2.testscore.avenue.Rout: avenueMerge.R
+## Update classlist and use to ignore drops. sometimes.
+## dropdir/classlist.csv
 
 ######################################################################
 
-## What about posting assignment marks? I used to be against this
-## Students can contact TAs for assignment marks and feedback?
-## Maybe better to get more Avenue-ish (i.e., open) going forward
+## Posting to Avenue
+## Pull a single assignment score
 
-## Stopped in the middle! 2021 Mar 03 (Wed)
+## Click "import"
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
 
-## Do the same for an assignment (COVID!)
+impmakeR += grade
 ## assign1.grade.Rout: assignscore.R
 impmakeR += grade
 .PRECIOUS: assign%.grade.Rout
-assign%.grade.Rout: TAmarks.rda assignscore.R
+assign%.grade.Rout: marks.rds assignscore.R
 	$(pipeR)
 
-######################################################################
-
-## Some of this is scantron stuff, I guess.
-
-## Prep for Avenue
-## merges into test and assignment pipelines being developed above
-## there's also stuff below and in content.mk!!
-## This takes anything with _score variables and makes a pre-Avenue csv
-## final.grade.avenue.Rout: avenueMerge.R
-## midterm2.grade.avenue.Rout: avenueMerge.R
-## assign1.grade.avenue.Rout: avenueMerge.R
-Ignore += *.avenue.Rout.csv
+## Simplifying, will it work? 2022 Mar 08 (Tue)
+## assign1.avenue.Rout: avenue.R
+## assign1.avenue.Rout.csv: avenue.R
 impmakeR += avenue
-%.avenue.Rout: %.rds sheetID.rda avenueMerge.R
-	$(run-R)
-
-######################################################################
-
-## Pipeline to mark and validate a set of scantrons
-## Moved back to content.mk 2021 Mar 01 (Mon)
-
-## SA merge stuff (marks recorded on spreadsheet) also moved back 2021 Mar 02 (Tue)
-
-######################################################################
-
-## This pulls out the chosen score from a test merge and calls it what Avenue likes
-## midterm2.grade.Rout:
-midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
-	$(run-R)
-
-final.grade.Rout: final.patch.Rout finalscore.R
-	$(run-R)
-
-course.grade.Rout: course.Rout courseGrade.R
-	$(run-R)
+%.avenue.Rout: %.grade.rds avenue.R
+	$(pipeR)
 
 ## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
 ## Avenue started giving me trouble with that as well, so now it just 
@@ -192,16 +87,88 @@ course.grade.Rout: course.Rout courseGrade.R
 ## but then we'd have to worry about the logic set up for posting more than
 ## one score at once (which we don't use anyway)
 
-## course.grade.avenue.csv: avenueNA.pl
-## final.grade.avenue.csv: avenueNA.pl
-## midterm2.grade.avenue.csv: avenueNA.pl
-## assign3.grade.avenue.csv: avenueNA.pl
+## assign1.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
 
-## Click "import"
-## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
+######################################################################
+
+## Pipeline to mark and validate a set of scantrons
+## See also content.mk 
+## Notes
+Sources += media.md
+
+pardirs += Tests
+
+## Add rows manually to the .tsv file if sheets don't scan!!!!
+## dropdir/midterm2.manual.tsv:
+dropdir/%.manual.tsv:
+	$(touch)
+
+## Student itemized responses
+## Script reads manual version first, ignores repeats
+## Necessitated by Daniel Park!
+## Match .dlm format
+Ignore += *.responses.tsv
+## midterm1.responses.tsv: rmerge.pl
+%.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
+	$(PUSH)
+
+######################################################################
+
+## Score the tests here (and compare with scantron score)
+Ignore += $(wildcard *.scoring.csv)
+### Formatted key sheet (made from scantron.csv)
+## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
+## midterm1.scoring.csv: Tests/midterm1.scantron.csv scoring.pl
+%.scoring.csv: Tests/%.scantron.csv scoring.pl
+	$(PUSH)
+
+## Score the students (ancient, deep matching)
+## How many have weird bubble versions? How many have best ≠ bubble?
+## midterm1.scores.rtmp:  scores.R
+## midterm1.scores.Rout:  scores.R
+impmakeR += scores
+%.scores.Rout: scores.R %.responses.tsv %.scoring.csv
+	$(pipeR)
+
+impmakeR += classscores
+## midterm1.classscores.Rout: classscores.R scores.R
+%.classscores.Rout: classscores.R %.scores.rds dropdir/classlist.csv
+	$(pipeR)
+
+## Did make just $#@!ing delete this not-made csv file from Dropbox??
+## Compare with office scores NOT part of current pipeline, but take a look
+## Scantron-office scores do not exist for people with idnum problems
+Ignore += *.office.csv
+## midterm1.office.csv: 
+%.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
+	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
+
+## midterm1.scorecomp.Rout: scorecomp.R
+impmakeR += scorecomp
+%.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
+	$(pipeR)
+
+######################################################################
+
+## Merge MC with SA scores
+## Who has an SA but not MC? Use to fix errors
+## Also doing a version of avenue csv here
+
+impmakeR += merge
+## midterm1.merge.Rout: midMerge.R
+impmakeR += merge
+midterm%.merge.Rout: midMerge.R midterm%.classscores.rds marks.rds
+	$(pipeR)
+
+impmakeR += grade
+## midterm1.grade.Rout: midtermGrade.R
+midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
+	$(pipeR)
+
+## midterm1.avenue.Rout.csv: avenue.R
 
 ######################################################################
 
@@ -317,6 +284,16 @@ grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
 	$(diff)
 
 ######################################################################
+## Fix stats.html weirdness?
+
+Ignore += questions*.html
+## questions1.html: stats.pl
+questions%.html: stats.pl dropdir/midterm1_disk/QuestionStatistics.html
+	$(PUSH)
+
+######################################################################
+
+Ignore += $(pardirs)
 
 ### Makestuff
 
