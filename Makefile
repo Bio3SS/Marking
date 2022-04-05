@@ -24,15 +24,17 @@ autopipeR = defined
 ## It has subdirectories for disks from MPS
 ## It could be better to have a private-subrepo for stuff I do by hand …
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
+## | dependencies might fix this
 
 Ignore += dropdir
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
 dropdir:
 	$(linkdirname)
 
-## mkdir dropdir/midterm1_disk/ ##
-## downcall  dropdir/midterm1_disk/ ##
-## cd dropdir/midterm1_disk/ && lastunzip ##
+## mkdir dropdir/midterm2_disk/ ##
+## downcall  dropdir/midterm2_disk/ ##
+## cd dropdir/midterm2_disk/ && lastunzip ##
+## mv ~/Downloads/scantron dropdir/midterm2_disk ##
 
 ######################################################################
 
@@ -111,7 +113,7 @@ dropdir/%.manual.tsv:
 ## Necessitated by Daniel Park!
 ## Match .dlm format
 Ignore += *.responses.tsv
-## midterm1.responses.tsv: rmerge.pl
+## midterm2.responses.tsv: rmerge.pl
 %.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
 	$(PUSH)
 
@@ -121,14 +123,14 @@ Ignore += *.responses.tsv
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
 ## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
-## midterm1.scoring.csv: Tests/midterm1.scantron.csv scoring.pl
+## midterm2.scoring.csv: Tests/midterm2.scantron.csv scoring.pl
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
-## midterm1.scores.rtmp:  scores.R
-## midterm1.scores.Rout:  scores.R
+## midterm2.scores.rtmp:  scores.R
+## midterm2.scores.Rout:  scores.R
 impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)

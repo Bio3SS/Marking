@@ -15,6 +15,7 @@ summary(answers)
 
 ## Identify unique versions and loop over them to calculate scores
 versions = unique(key$Version)
+print(versions)
 scores <- matrix(nrow=nrow(answers), ncol=length(versions))
 for (ver in versions){
 	vkey <- (key
