@@ -140,11 +140,10 @@ impmakeR += classscores
 %.classscores.Rout: classscores.R %.scores.rds dropdir/classlist.csv
 	$(pipeR)
 
-## Did make just $#@!ing delete this not-made csv file from Dropbox??
-## Compare with office scores NOT part of current pipeline, but take a look
+## Compare with Scantron-office scores (side branch)
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
-## midterm1.office.csv: 
+## midterm2.office.csv:
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
