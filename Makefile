@@ -119,6 +119,11 @@ Ignore += *.responses.tsv
 
 ######################################################################
 
+## Weird merge problem might have messed up scantron?
+## cp Tests/midterm2.scantron.csv dropdir ##
+## diff Tests/midterm2.scantron.csv dropdir/midterm2.scantron.csv ##
+## No evidence of that??
+
 ## Score the tests here (and compare with scantron score)
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
@@ -136,7 +141,7 @@ impmakeR += scores
 	$(pipeR)
 
 impmakeR += classscores
-## midterm1.classscores.Rout: classscores.R scores.R
+## midterm2.classscores.Rout: classscores.R scores.R
 %.classscores.Rout: classscores.R %.scores.rds dropdir/classlist.csv
 	$(pipeR)
 
@@ -147,7 +152,7 @@ Ignore += *.office.csv
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## midterm1.scorecomp.Rout: scorecomp.R
+## midterm2.scorecomp.Rout: scorecomp.R
 impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
 	$(pipeR)
