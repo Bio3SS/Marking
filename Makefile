@@ -120,11 +120,6 @@ Ignore += *.responses.tsv
 
 ######################################################################
 
-## Weird merge problem might have messed up scantron?
-## cp Tests/midterm2.scantron.csv dropdir ##
-## diff Tests/midterm2.scantron.csv dropdir/midterm2.scantron.csv ##
-## No evidence of that??
-
 ## Score the tests here (and compare with scantron score)
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
