@@ -1,4 +1,4 @@
 while (<>){
-	s/�//;
+	s/[^[:ascii:]]//g;
 	print;
 }

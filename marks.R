@@ -2,10 +2,13 @@ library(dplyr)
 
 library(shellpipes)
 
+## Instead of trying to control the spreadsheet, this year I made a master sheet on top of Celine's various sheets
+
 marks <- tsvRead() %>% select(-c(Last,First))
 
 summary(marks %>% mutate_if(is.character, as.factor))
 
+## Make this into a loop
 if ("A1Total" %in% names(marks)){
 
 	## Look for MSAF with mark
@@ -24,9 +27,28 @@ if ("A1Total" %in% names(marks)){
 	)
 }
 
+if ("A2Total" %in% names(marks)){
+
+	## Look for MSAF with mark
+	stopifnot(
+		nrow(
+			marks %>% filter(A2Note=="MSAF" & !is.na(A2Total) & A2Total>0)
+		) == 0
+	)
+
+	marks <- (marks %>%
+		mutate(NULL
+			, A2=A2Total
+			, A2=ifelse(A2Note=="MSAF", NA, A2)
+			, A2=ifelse(A2Note=="LATE", 0.9*A2, A2)
+		) %>% select(-c(A2Note,A2Total))
+	)
+}
+
+## Right now the two midterms are different (only one with SA)
+## Is it worth looping? If so, we should be checking for Note, not SA
 if ("M1SA" %in% names(marks))
 {
-
 	## Look for MSAF with mark
 	stopifnot(
 		nrow(
@@ -38,6 +60,16 @@ if ("M1SA" %in% names(marks))
 		mutate(NULL
 			, M1SA=ifelse(M1Note=="MSAF", NA, M1SA)
 		) %>% select(-c(M1Note))
+	)
+}
+
+if ("M2Note" %in% names(marks))
+{
+	marks <- (marks %>%
+		mutate(NULL
+			, M2SA=ifelse(M2Note=="MSAF", NA, 0)
+			, M2Ver=NA
+		)
 	)
 }
 

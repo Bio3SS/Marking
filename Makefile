@@ -38,7 +38,7 @@ dropdir:
 
 ######################################################################
 
-## Marks (does assignments automatically)
+## Marks (does assignments prepares tests)
 
 ## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/
 ## dropdir/marks.tsv  ##
@@ -66,11 +66,8 @@ marks.Rout: marks.R marks.tsv
 ## Posting to Avenue
 ## Pull a single assignment score
 
-## Click "import"
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
-
 impmakeR += grade
-## assign1.grade.Rout: assignscore.R
+## assign2.grade.Rout: assignscore.R
 impmakeR += grade
 .PRECIOUS: assign%.grade.Rout
 assign%.grade.Rout: marks.rds assignscore.R
@@ -88,11 +85,15 @@ impmakeR += avenue
 ## drops all lines with NA (which is stupid, we could do it above)
 ## but then we'd have to worry about the logic set up for posting more than
 ## one score at once (which we don't use anyway)
+## avenue is no longer stupid about NAs (flags them but continues the import), so this step is only aesthetic now.
 
-## assign1.avenue.csv: avenueNA.pl
+## assign2.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
+
+## Click "import"
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
 
 ######################################################################
 
@@ -164,17 +165,19 @@ impmakeR += scorecomp
 ## Also doing a version of avenue csv here
 
 impmakeR += merge
-## midterm1.merge.Rout: midMerge.R
+## midterm2.merge.Rout: midMerge.R
 impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.classscores.rds marks.rds
 	$(pipeR)
 
 impmakeR += grade
-## midterm1.grade.Rout: midtermGrade.R
+## midterm2.grade.Rout: midtermGrade.R
 midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 	$(pipeR)
 
-## midterm1.avenue.Rout.csv: avenue.R
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
+## midterm2.avenue.Rout: avenue.R
+## midterm2.avenue.Rout.csv: avenue.R
 
 ######################################################################
 
@@ -195,34 +198,39 @@ midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 ######################################################################
 
 # Read the polls into three variables
-
-polls.Rout: dropdir/polls.csv polls.R
-	$(wrapR)
+## Go through this step by step and figure out what PollEverywhere has changed ☹
+polls.Rout: polls.R dropdir/polls.csv
+	$(pipeR)
 
 # Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
 # Treat the question that matches "macid" as a fake (if present)
 # and use it to help with ID
-parsePolls.Rout: polls.rda parsePolls.R
-	$(wrapR)
+## parsePolls.rtmp: parsePolls.R polls.rda
+parsePolls.Rout: parsePolls.R polls.rda
+	$(pipeR)
 
 # Calculate a pollScore and combine with the extraScore made by hand
 # The csv is where to look for orphan lines and try to figure out if people are missing points they should get
 # Then loop back to the manual part of the .ssv
 
+## This should be kept blank!
 Sources += extraPolls.ssv
-## Make an empty extraPolls automatically
+## This is the real one; can be reset each year
+## dropdir/extraPolls.ssv.rmk:
 dropdir/%.ssv: 
 	$(CP) $*.ssv $@
-## del dropdir/extraPolls.ssv ##
 
-pollScore.Rout: extraPolls.ssv parsePolls.rda pollScore.R
+## Score polls and print a report about UNKNOWN scores
+## Something is wrong with the upstream UNKNOWN processing…
+## almost certainly because polleverywhere changed something again
+pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 	$(pipeR)
 ## pollScore.Rout.csv:  pollScore.R
 
 ## Provisional poll scores
 
 ## Some sort of chaining problem here; impmakeR?
-## pollScore.avenue.Rout: avenueMerge.R
+## pollScore.avenue.Rout: avenue.R
 ## pollScore.avenue.csv: avenueNA.pl
 
 # Ask people to answer a fake question with "macid" in it
@@ -290,11 +298,20 @@ grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
 	$(diff)
 
 ######################################################################
+
+## Exam Question statistics from scantron peeps
 ## Fix stats.html weirdness?
 
 Ignore += questions*.html
-## questions1.html: stats.pl
-questions%.html: stats.pl dropdir/midterm1_disk/QuestionStatistics.html
+## questions2.html: stats.pl
+questions%.html: stats.pl dropdir/midterm%_disk/QuestionStatistics.html
+	$(PUSH)
+
+## Now doing this with a manual CP, because there is a binary encoding step as well? Or what?
+
+Ignore += stats*.html
+## stats2.html: dropdir/stats2.html stats.pl
+stats%.html: dropdir/stats%.html stats.pl
 	$(PUSH)
 
 ######################################################################

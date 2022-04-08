@@ -1,10 +1,9 @@
-print(names(id))
+library(shellpipes)
 
-## Does not work with current code, but was a good idea
-## The fancy way would be to grep and rename id variables
-firstname <- "First.name" 
-lastname <- "Last.name"           
-email <- "Email"                  
+loadEnvironments()
+
+names(id) <- make.names(names(id))
+print(names(id))
 
 print(names(report))
 
@@ -57,10 +56,10 @@ print(rec)
 
 ## Pull dates from the poll matrix (there will be blanks as well as repeats)
 qdates <- sapply(rec, function(r){
-	return(unique(r[r!=""]))
+	return(unique(r[!is.na(r) & r!=""]))
 })
 
-print(qdates)
+qdates <- unlist(qdates)
 
 ## Number of polls on each date
 qq <- sapply(qdates, function(q){
@@ -70,6 +69,7 @@ qq <- sapply(qdates, function(q){
 ## Look at the answers
 summary(qdates)
 summary(qq)
+
 data.frame(qdates, qq)
 
-# rdsave(id, report, qq)
+saveVars(id, report, qq)

@@ -1,9 +1,10 @@
-## Go through this step by step and figure out what PollEverywhere has changed ☹
-report <- read.csv(input_files[[1]])
+library(shellpipes)
+
+report <- csvRead()
 print(names(report))
 
-rectext = "Received.at"
-modtext = "Response.method"
+rectext = "Received at"
+modtext = "Response method"
 idfields <- c(1:6)
 
 ## Spin out different kinds of fields (id, time received, modality)
@@ -37,4 +38,4 @@ summary(id)
 summary(report)
 summary(rec)
 
-# rdsave(id, report, rec)
+saveVars(id, report, rec)
