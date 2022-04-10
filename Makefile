@@ -208,12 +208,13 @@ parsePolls.Rout: parsePolls.R polls.rda
 # The csv is where to look for orphan lines and try to figure out if people are missing points they should get
 # Then loop back to the manual part of the .ssv
 
-## This should be kept blank!
-Sources += extraPolls.ssv
-## This is the real one; can be reset each year
-## dropdir/extraPolls.ssv.rmk:
+## Edit extraPolls on dropdir; reset each year below
+## dropdir/extraPolls.ssv:
 dropdir/%.ssv: 
 	$(CP) $*.ssv $@
+## This should be kept blank!
+## dropdir/extraPolls.ssv.rmk:
+Sources += extraPolls.ssv
 
 ## Score polls and print a report about UNKNOWN scores
 ## Something is wrong with the upstream UNKNOWN processing…
