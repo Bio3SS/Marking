@@ -87,7 +87,7 @@ impmakeR += avenue
 ## one score at once (which we don't use anyway)
 ## avenue is no longer stupid about NAs (flags them but continues the import), so this step is only aesthetic now.
 
-## assign2.avenue.csv: avenueNA.pl
+## assign3.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
@@ -208,17 +208,18 @@ parsePolls.Rout: parsePolls.R polls.rda
 # The csv is where to look for orphan lines and try to figure out if people are missing points they should get
 # Then loop back to the manual part of the .ssv
 
-## This should be kept blank!
-Sources += extraPolls.ssv
-## This is the real one; can be reset each year
-## dropdir/extraPolls.ssv.rmk:
+## Edit extraPolls on dropdir; reset each year below
+## dropdir/extraPolls.ssv:
 dropdir/%.ssv: 
 	$(CP) $*.ssv $@
+## This should be kept blank!
+## dropdir/extraPolls.ssv.rmk:
+Sources += extraPolls.ssv
 
 ## Score polls and print a report about UNKNOWN scores
 pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 	$(pipeR)
-## pollScore.Rout.csv:  pollScore.R
+## pollScore.grade.Rout.csv:  pollScore.R
 
 ## Provisional poll scores
 
@@ -231,7 +232,7 @@ pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 # Then save people manually in column 3 of .ssv
 
 ## pollScorePlus was an attempt to rescue using student number
-## Ditching becasue it confused me 2021 Apr 28 (Wed)
+## Ditching because it confused me 2021 Apr 28 (Wed)
 
 ######################################################################
 

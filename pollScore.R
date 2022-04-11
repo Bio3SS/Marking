@@ -18,7 +18,10 @@ score <- apply(as.matrix(report), 1, function(s){
 })
 
 scoref <- data.frame(id=id, score=score)
-csvSave(scoref %>% filter(grepl("UNKNOWN", id)))
+(scoref
+	%>% filter(grepl("UNKNOWN", id))
+	%>% mutate(score=score/(needMax*weight))
+) %>% csvSave
 
 sf <- (scoref
 	%>% mutate(id = sub(",.*", "", id))
@@ -48,7 +51,7 @@ print(df %>% filter(score>2))
 
 scores <- (df
 	%>% filter(!is.na(score))
-	%>% transmute(macid=id, Polls_score=score)
+	%>% transmute(Username=id, Polls_score=score)
 )
 
 summary(scores)

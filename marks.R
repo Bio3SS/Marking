@@ -9,6 +9,7 @@ marks <- tsvRead() %>% select(-c(Last,First))
 summary(marks %>% mutate_if(is.character, as.factor))
 
 ## Make this into a loop
+
 if ("A1Total" %in% names(marks)){
 
 	## Look for MSAF with mark
@@ -42,6 +43,24 @@ if ("A2Total" %in% names(marks)){
 			, A2=ifelse(A2Note=="MSAF", NA, A2)
 			, A2=ifelse(A2Note=="LATE", 0.9*A2, A2)
 		) %>% select(-c(A2Note,A2Total))
+	)
+}
+
+if ("A3Total" %in% names(marks)){
+
+	## Look for MSAF with mark
+	stopifnot(
+		nrow(
+			marks %>% filter(A3Note=="MSAF" & !is.na(A3Total) & A3Total>0)
+		) == 0
+	)
+
+	marks <- (marks %>%
+		mutate(NULL
+			, A3=A3Total
+			, A3=ifelse(A3Note=="MSAF", NA, A3)
+			, A3=ifelse(A3Note=="LATE", 0.9*A3, A3)
+		) %>% select(-c(A3Note,A3Total))
 	)
 }
 
