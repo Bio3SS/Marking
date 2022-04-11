@@ -1,2 +1,2 @@
-## extra is 1 to numClasses; manual is 0 to numPartPoints; delete this line
+## extra is 1 to numClasses; manual is 0 to 1; delete this line
 id extra manual

@@ -87,7 +87,7 @@ impmakeR += avenue
 ## one score at once (which we don't use anyway)
 ## avenue is no longer stupid about NAs (flags them but continues the import), so this step is only aesthetic now.
 
-## assign2.avenue.csv: avenueNA.pl
+## assign3.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
@@ -217,11 +217,13 @@ dropdir/%.ssv:
 Sources += extraPolls.ssv
 
 ## Score polls and print a report about UNKNOWN scores
-## Something is wrong with the upstream UNKNOWN processing…
+## Look in the csv for unlinked scores to add to the manual column of
+## This whole thing is a bit loops; we should probably parse, then make the manual, then add things up.
+## dropdir/extraPolls.ssv
 ## almost certainly because polleverywhere changed something again
 pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 	$(pipeR)
-## pollScore.Rout.csv:  pollScore.R
+## pollScore.grade.Rout.csv:  pollScore.R
 
 ## Provisional poll scores
 
@@ -234,7 +236,7 @@ pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 # Then save people manually in column 3 of .ssv
 
 ## pollScorePlus was an attempt to rescue using student number
-## Ditching becasue it confused me 2021 Apr 28 (Wed)
+## Ditching because it confused me 2021 Apr 28 (Wed)
 
 ######################################################################
 
