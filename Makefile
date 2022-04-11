@@ -216,8 +216,6 @@ dropdir/%.ssv:
 	$(CP) $*.ssv $@
 
 ## Score polls and print a report about UNKNOWN scores
-## Something is wrong with the upstream UNKNOWN processing…
-## almost certainly because polleverywhere changed something again
 pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 	$(pipeR)
 ## pollScore.Rout.csv:  pollScore.R
@@ -226,7 +224,7 @@ pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 
 ## Some sort of chaining problem here; impmakeR?
 ## pollScore.avenue.Rout: avenue.R
-## pollScore.avenue.csv: avenueNA.pl
+## pollScore.avenue.Rout.csv: avenueNA.pl
 
 # Ask people to answer a fake question with "macid" in it
 # in all the ways that they answered the polls
