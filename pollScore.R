@@ -17,7 +17,6 @@ score <- apply(as.matrix(report), 1, function(s){
 	))
 })
 
-
 scoref <- data.frame(id=id, score=score)
 (scoref
 	%>% filter(grepl("UNKNOWN", id))

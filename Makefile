@@ -214,20 +214,19 @@ dropdir/%.ssv:
 ## This should be kept blank!
 ## dropdir/extraPolls.ssv.rmk:
 Sources += extraPolls.ssv
-
 ## Score polls and print a report about UNKNOWN scores
 ## Look in the csv for unlinked scores to add to the manual column of
 ## This whole thing is a bit loopy; we should probably parse, then make the manual, then add things up.
-## dropdir/extraPolls.ssv
+
+## pollScore.grade.Rout.csv:  pollScore.R
 pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 	$(pipeR)
-## pollScore.grade.Rout.csv:  pollScore.R
 
 ## Provisional poll scores
 
 ## Some sort of chaining problem here; impmakeR?
 ## pollScore.avenue.Rout: avenue.R
-## pollScore.avenue.csv: avenueNA.pl
+## pollScore.avenue.Rout.csv: avenueNA.pl
 
 # Ask people to answer a fake question with "macid" in it
 # in all the ways that they answered the polls
