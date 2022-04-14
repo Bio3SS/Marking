@@ -2,6 +2,9 @@ library(shellpipes)
 
 loadEnvironments()
 
+dim(rec)
+dim(report)
+
 names(id) <- make.names(names(id))
 print(names(id))
 
@@ -16,6 +19,9 @@ if(length(fq)==1){
 	# rec <- rec[-fqgroup]
 	rec <- rec[-fq]
 } else {id$ques <- "UNKNOWN"}
+
+dim(rec)
+dim(report)
 
 ## What does the id frame look like?
 ## print(summary(id))
@@ -56,10 +62,11 @@ print(rec)
 
 ## Pull dates from the poll matrix (there will be blanks as well as repeats)
 qdates <- sapply(rec, function(r){
-	return(unique(r[!is.na(r) & r!=""]))
+	return(min(r[!is.na(r) & r!=""]))
 })
 
 qdates <- unlist(qdates)
+print(qdates)
 
 ## Number of polls on each date
 qq <- sapply(qdates, function(q){
@@ -71,5 +78,9 @@ summary(qdates)
 summary(qq)
 
 data.frame(qdates, qq)
+
+dim(report)
+class(qq)
+length(qq)
 
 saveVars(id, report, qq)

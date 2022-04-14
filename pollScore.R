@@ -7,7 +7,7 @@ needMax <- 0.9
 weight <- (sum(1/qq))
 print(weight)
 
-print(nrow(as.matrix(report)))
+print(dim(as.matrix(report)))
 print(length(qq))
 
 score <- apply(as.matrix(report), 1, function(s){
