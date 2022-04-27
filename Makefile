@@ -44,7 +44,7 @@ dropdir:
 ## dropdir/marks.tsv  ##
 
 ## Convert (unexplained) blanks to zeroes
-## Note: this now affects notes, too.
+## Note: this now affects notes, too; weird but not harmful, i think
 Ignore += marks.tsv
 marks.tsv: dropdir/marks.tsv zero.pl ##
 	$(PUSH)
@@ -208,14 +208,15 @@ parsePolls.Rout: parsePolls.R polls.rda
 # Then loop back to the manual part of the .ssv
 
 ## Edit extraPolls on dropdir; reset each year below
-## dropdir/extraPolls.ssv:
-dropdir/%.ssv: 
-	$(CP) $*.ssv $@
-## This should be kept blank!
+## Github version should be kept blank
 ## dropdir/extraPolls.ssv.rmk:
 Sources += extraPolls.ssv
+dropdir/%.ssv: 
+	$(CP) $*.ssv $@
+
 ## Score polls and print a report about UNKNOWN scores
-## Look in the csv for unlinked scores to add to the manual column of
+## Look in the csv for unlinked scores to add to the manual column of extraPolls
+## dropdir/extraPolls.ssv
 ## This whole thing is a bit loopy; we should probably parse, then make the manual, then add things up.
 
 ## pollScore.grade.Rout.csv:  pollScore.R
