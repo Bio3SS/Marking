@@ -31,9 +31,9 @@ dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
 dropdir:
 	$(linkdirname)
 
-## mkdir dropdir/midterm2_disk/ ##
-## downcall  dropdir/midterm2_disk/ ##
-## cd dropdir/midterm2_disk/ && lastunzip ##
+## mkdir dropdir/final_disk/ ##
+## downcall  dropdir/final_disk/ ##
+## cd dropdir/final_disk/ && lastunzip ##
 ## mv ~/Downloads/scantron dropdir/midterm2_disk ##
 
 ######################################################################
@@ -110,12 +110,18 @@ dropdir/%.manual.tsv:
 	$(touch)
 
 ## Student itemized responses
-## Script reads manual version first, ignores repeats
-## Necessitated by Daniel Park!
-## Match .dlm format
+## 2022 Apr 28 (Thu) Ditching rmerge; instead make a copy and edit it in the Dropbox
+
+.PRECIOUS: dropdir/%.scanned.tsv
+dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
+	$(pcopy)
+
 Ignore += *.responses.tsv
-## midterm2.responses.tsv: rmerge.pl
-%.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
+## final.responses.tsv: rmerge.pl dropdir/final.scanned.tsv
+
+## rmerge no longer merges, but does catch some ID errors
+Ignore += %.responses.tsv
+%.responses.tsv: dropdir/%.scanned.tsv rmerge.pl
 	$(PUSH)
 
 ######################################################################
@@ -124,31 +130,31 @@ Ignore += *.responses.tsv
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
 ## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
-## midterm2.scoring.csv: Tests/midterm2.scantron.csv scoring.pl
+## final.scoring.csv: Tests/final.scantron.csv scoring.pl
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
-## midterm2.scores.rtmp:  scores.R
-## midterm2.scores.Rout:  scores.R
+## final.scores.rtmp:  scores.R
+## final.scores.Rout:  scores.R
 impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
 
 impmakeR += classscores
-## midterm2.classscores.Rout: classscores.R scores.R
+## final.classscores.Rout: classscores.R scores.R
 %.classscores.Rout: classscores.R %.scores.rds dropdir/classlist.csv
 	$(pipeR)
 
 ## Compare with Scantron-office scores (side branch)
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
-## midterm2.office.csv:
+## final.office.csv:
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## midterm2.scorecomp.Rout: scorecomp.R
+## final.scorecomp.Rout: scorecomp.R
 impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
 	$(pipeR)
