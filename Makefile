@@ -20,8 +20,9 @@ autopipeR = defined
 
 ######################################################################
 
-## dropdir is for sensitive products that I want to back up
-## It has subdirectories for disks from MPS
+## dropdir is for anything downloaded
+## But also for stuff we edit with student info
+## Scantron transmittals from MPS are subdirectories
 ## It could be better to have a private-subrepo for stuff I do by hand …
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
 ## | dependencies might fix this
@@ -31,6 +32,7 @@ dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
 dropdir:
 	$(linkdirname)
 
+## MPS transfer examples
 ## mkdir dropdir/final_disk/ ##
 ## downcall  dropdir/final_disk/ ##
 ## cd dropdir/final_disk/ && lastunzip ##
@@ -38,7 +40,17 @@ dropdir:
 
 ######################################################################
 
+## Make classlist from Avenue by downloading grades
+## Need to do setup wizard, then Enter/Export?
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=413706
+
+## Update classlist and use to ignore drops. sometimes.
+## dropdir/classlist.csv
+
+######################################################################
+
 ## Marks (does assignments prepares tests)
+## Start the spreadsheet with the classlist
 
 ## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/
 ## dropdir/marks.tsv  ##
@@ -50,16 +62,8 @@ marks.tsv: dropdir/marks.tsv zero.pl ##
 	$(PUSH)
 
 ## Parse the marks sheet (builds through semester as marks are added)
-marks.Rout: marks.R marks.tsv
-
-######################################################################
-
-## Make classlist from Avenue by downloading grades
-## Need to do setup wizard, then Enter/Export?
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=413706
-
-## Update classlist and use to ignore drops. sometimes.
-## dropdir/classlist.csv
+## Merge in classlist (which updates with add/drop)
+marks.Rout: marks.R marks.tsv dropdir/classlist.csv
 
 ######################################################################
 
@@ -111,8 +115,10 @@ dropdir/%.manual.tsv:
 
 ## Student itemized responses
 ## 2022 Apr 28 (Thu) Ditching the merge in rmerge; instead make a copy and edit it in the Dropbox
+## EDIT .scanned.tsv NOT the original .dlm
 
 .PRECIOUS: dropdir/%.scanned.tsv
+## dropdir/final.scanned.tsv: 
 dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 	$(pcopy)
 
@@ -135,7 +141,7 @@ Ignore += $(wildcard *.scoring.csv)
 	$(PUSH)
 
 Tests/%: | Tests
-	$(makethere)
+	$(justmakethere)
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
@@ -248,17 +254,13 @@ pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 ######################################################################
 
 ## Final exam and final grade
-## Regular scantron-exam stuff still in content.mk
-final.patch.Rout: final_mark.csv finalAvenue.R
-	$(run-R)
-
-## Read and combine different mark sources
-
-tests.Rout: tests.R TAmarks.rda midterm1.merge.rds midterm2.merge.rds final.merge.rds
-	$(pipeR)
 
 gradeFuns.Rout: gradeFuns.R
 	$(wrapR)
+
+## Read and combine different mark sources
+tests.Rout: tests.R midterm1.merge.rds midterm2.merge.rds
+	$(pipeR)
 
 ## Final grade: 
 ## Check weightings, number of assignments, components, etc.

@@ -2,11 +2,17 @@ library(dplyr)
 
 library(shellpipes)
 
+class <- (csvRead()
+	%>% mutate(Username=sub("#", "", Username))
+	%>% select(-c("End-of-Line Indicator"))
+)
+
 ## Instead of trying to control the spreadsheet, this year I made a master sheet on top of Celine's various sheets
+marks <- (tsvRead() %>% select(-c(Last,First))
+	%>% right_join(class)
+)
 
-marks <- tsvRead() %>% select(-c(Last,First))
-
-summary(marks %>% mutate_if(is.character, as.factor))
+## summary(marks %>% mutate_if(is.character, as.factor))
 
 ## Make this into a loop
 

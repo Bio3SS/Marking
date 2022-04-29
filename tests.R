@@ -7,11 +7,12 @@ loadEnvironments()
 
 testscores <- (rdsReadList()
 	%>% bind_rows(.id="Q")
-	## %>% mutate(Q = str_replace(Q, ".merge", ""))
 	%>% pivot_wider(names_from=Q, values_from=score)
 )
 
 summary(testscores)
+
+quit()
 summary(tests)
 
 ## Add MSAF NAs for midterms; eliminate all NAs for final

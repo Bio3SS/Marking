@@ -183,3 +183,8 @@ course.grade.Rout: course.Rout courseGrade.R
 
 ######################################################################
 
+
+## Final exam and final grade
+## Regular scantron-exam stuff still in content.mk
+final.patch.Rout: final_mark.csv finalAvenue.R
+	$(run-R)
