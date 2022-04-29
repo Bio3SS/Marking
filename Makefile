@@ -110,7 +110,7 @@ dropdir/%.manual.tsv:
 	$(touch)
 
 ## Student itemized responses
-## 2022 Apr 28 (Thu) Ditching rmerge; instead make a copy and edit it in the Dropbox
+## 2022 Apr 28 (Thu) Ditching the merge in rmerge; instead make a copy and edit it in the Dropbox
 
 .PRECIOUS: dropdir/%.scanned.tsv
 dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
@@ -133,6 +133,9 @@ Ignore += $(wildcard *.scoring.csv)
 ## final.scoring.csv: Tests/final.scantron.csv scoring.pl
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
+
+Tests/%: | Tests
+	$(makethere)
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
