@@ -16,10 +16,8 @@ scores <- rdsRead("score")
 names(scores)
 names(marks)
 
-quit()
-
 scores <- (marks
-	%>% left_join(scores, by = "Username")
+	%>% left_join(scores, by = "idnum")
 	%>% setNames(sub(test, "", names(.)))
 	%>% select(Username, idnum, SA, Ver, bubVer, bestVer, bestScore)
 )

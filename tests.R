@@ -3,16 +3,12 @@ library(tidyr)
 library(stringr)
 library(shellpipes)
 
-loadEnvironments()
-
-testscores <- (rdsReadList()
-	%>% bind_rows(.id="Q")
-	%>% pivot_wider(names_from=Q, values_from=score)
-)
+testscores <- rdsReadList()
 
 summary(testscores)
 
 quit()
+
 summary(tests)
 
 ## Add MSAF NAs for midterms; eliminate all NAs for final

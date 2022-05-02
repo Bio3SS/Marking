@@ -108,13 +108,8 @@ Sources += media.md
 
 pardirs += Tests
 
-## Add rows manually to the .tsv file if sheets don't scan!!!!
-## dropdir/midterm2.manual.tsv:
-dropdir/%.manual.tsv:
-	$(touch)
-
 ## Student itemized responses
-## 2022 Apr 28 (Thu) Ditching the merge in rmerge; instead make a copy and edit it in the Dropbox
+## To fix mistakes:
 ## EDIT .scanned.tsv NOT the original .dlm
 
 .PRECIOUS: dropdir/%.scanned.tsv
@@ -172,15 +167,19 @@ impmakeR += scorecomp
 ## Also doing a version of avenue csv here
 
 impmakeR += merge
-## midterm2.merge.Rout: midMerge.R
+## midterm1.merge.Rout: midMerge.R
 impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
 	$(pipeR)
 
+## Doesn't do much, but can scan for people who didn't write final
 ## final.merge.Rtmp: merge.R final.scores.rds marks.rds
-final.merge.Rout: merge.R final.scores.rds marks.rds
+final.merge.Rout: finalMerge.R final.scores.rds marks.rds
 	$(pipeR)
 
+######################################################################
+
+## Test Grades to Avenue?
 impmakeR += grade
 ## midterm2.grade.Rout: midtermGrade.R
 midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
@@ -260,7 +259,7 @@ gradeFuns.Rout: gradeFuns.R
 	$(wrapR)
 
 ## Read and combine different mark sources
-tests.Rout: tests.R midterm1.merge.rds midterm2.merge.rds
+tests.Rout: tests.R marks.rda midterm1.merge.rds midterm2.merge.rds final.merge.rds
 	$(pipeR)
 
 ## Final grade: 
