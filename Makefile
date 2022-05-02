@@ -130,11 +130,12 @@ Ignore += %.responses.tsv
 ## Score the tests here (and compare with scantron score)
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
-## cd Tests && make midterm1.scantron.csv ## to stop making forever ##
-## final.scoring.csv: Tests/final.scantron.csv scoring.pl
-%.scoring.csv: Tests/%.scantron.csv scoring.pl
+## midterm2.scoring.csv: Tests/midterms.scantron.csv scoring.pl
+.PRECIOUS: %.scoring.csv
+%.scoring.csv: Tests/outputs/%.scantron.csv scoring.pl
 	$(PUSH)
 
+.PRECIOUS: Tests/%
 Tests/%: | Tests
 	$(justmakethere)
 
@@ -259,7 +260,7 @@ gradeFuns.Rout: gradeFuns.R
 	$(wrapR)
 
 ## Read and combine different mark sources
-tests.Rout: tests.R marks.rda midterm1.merge.rds midterm2.merge.rds final.merge.rds
+tests.Rout: tests.R marks.rds midterm1.merge.rds midterm2.merge.rds final.merge.rds pollScore.rds 
 	$(pipeR)
 
 ## Final grade: 

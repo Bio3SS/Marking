@@ -3,24 +3,27 @@ library(tidyr)
 library(stringr)
 library(shellpipes)
 
-testscores <- rdsReadList()
+tests <- (rdsRead("marks")
+	%>% select(Username, idnum, A1, A2, A3)
+)
 
-summary(testscores)
+testscores <- rdsReadList("merge", trim = ".merge.*")
 
-quit()
+for(n in names(testscores)){
+	t <- (testscores[[n]]
+		%>% select(Username, !!n := total)
+	)
+	tests <- full_join(tests, t)
+}
 
-summary(tests)
-
-## Add MSAF NAs for midterms; eliminate all NAs for final
-tests <- (left_join(tests, testscores)
-	%>% transmute(
-		macid, idnum
-		, midterm1 = ifelse(is.na(midterm1), NA, midterm1.merge)
-		, midterm2 = ifelse(is.na(midterm2), NA, midterm2.merge)
-		, final= ifelse(is.na(final.merge), 0, final.merge)
+tests <- (tests
+	%>% mutate(
+		final= ifelse(is.na(final), 0, final)
 	)
 )
 
 summary(tests)
+
+print(tests %>% filter(midterm1==0 | midterm2==0))
 
 rdsSave(tests)
