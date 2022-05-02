@@ -141,7 +141,7 @@ Tests/%: | Tests
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
-## final.scores.rtmp:  scores.R
+## final.scores.Rout:  scores.R
 ## midterm2.scores.Rout: scores.R
 ## midterm2.scores.Rout: midterm2.responses.tsv midterm2.scoring.csv
 impmakeR += scores
@@ -186,9 +186,14 @@ impmakeR += grade
 midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 	$(pipeR)
 
+final.grade.Rout: finalGrade.R final.merge.rds
+	$(pipeR)
+
+## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
 ## midterm2.avenue.Rout: avenue.R
 ## midterm2.avenue.Rout.csv: avenue.R
+## final.avenue.Rout.csv: avenue.R
 
 ######################################################################
 
@@ -256,17 +261,17 @@ pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 
 ## Final exam and final grade
 
+## Read and combine different mark sources
+combine.Rout: combine.R marks.rds midterm1.merge.rds midterm2.merge.rds final.merge.rds pollScore.grade.rds 
+	$(pipeR)
+
 gradeFuns.Rout: gradeFuns.R
 	$(wrapR)
-
-## Read and combine different mark sources
-tests.Rout: tests.R marks.rds midterm1.merge.rds midterm2.merge.rds final.merge.rds pollScore.rds 
-	$(pipeR)
 
 ## Final grade: 
 ## Check weightings, number of assignments, components, etc.
 ## course.Rout.csv: course.R
-course.Rout: gradeFuns.rda tests.rds pollScore.rds TAmarks.rda course.R
+course.Rout: course.R gradeFuns.rda combine.rds
 	$(pipeR)
 
 ## 2021 special-purpose (final grades to Avenue)
@@ -280,21 +285,30 @@ courseAvenue.Rout: courseAvenue.R course.rds
 
 ## Go to course through faculty center
 ## https://epprd.mcmaster.ca/psp/prepprd/EMPLOYEE/SA/c/SA_LEARNING_MANAGEMENT.SS_FACULTY.GBL?pslnkid=MCM_WC_FCLT_CNTR
-## You can download as EXCEL (upper right of roster display)
+## Need to click on a weird "roster" icon, then
+## download as EXCEL (upper right of roster display)
 ## and upload as CSV
 
-dropdir/mosaic.xls: HTML document, ASCII text
-## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
+
+## CHECK class number (needs to be cribbed from Mosaic and entered here)
+
+## New version 2022 May 02 (Mon); make the file from scratch?
+## mosaic_final.Rout.csv: mosaic_final.R
+mosaic_final.Rout: mosaic_final.R course.rds
+	$(pipeR)
+
+## A version that merges in a csv downloaded from mosaic; this has been a plague
+## dropdir/mosaic.xls: HTML document, ASCII text
+## mv dropdir/mosaic.xls dropdir/mosaic.html ##
+## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
 ## FAiled again 2021 Apr 28 (Wed) (readxl)
 ## downcall dropdir/mosaic.csv
 ## It would be better to change some of the code here and keep the
 ## student numbers as strings
-
-## CHECK class number (needs to be cribbed from Mosaic and entered here)
-
+## mosaic_grade.Rout.csv: mosaic_grade.R
+## mosaic_grade.Rout.csv: mosaic_grade.R
 mosaic_grade.Rout: dropdir/mosaic.csv course.rds mosaic_grade.R
 	$(pipeR)
-## mosaic_grade.Rout.csv: mosaic_grade.R
 
 ## Upload this .csv to mosaic
 ## Faculty center, online grading tab

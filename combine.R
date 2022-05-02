@@ -3,8 +3,10 @@ library(tidyr)
 library(stringr)
 library(shellpipes)
 
-tests <- (rdsRead("marks")
+scores <- (rdsRead("marks")
 	%>% select(Username, idnum, A1, A2, A3)
+	%>% left_join(rdsRead("poll"))
+	%>% rename(polls = Polls_score)
 )
 
 testscores <- rdsReadList("merge", trim = ".merge.*")
@@ -13,17 +15,11 @@ for(n in names(testscores)){
 	t <- (testscores[[n]]
 		%>% select(Username, !!n := total)
 	)
-	tests <- full_join(tests, t)
+	scores <- full_join(scores, t)
 }
 
-tests <- (tests
-	%>% mutate(
-		final= ifelse(is.na(final), 0, final)
-	)
-)
+summary(scores)
 
-summary(tests)
+print(scores %>% filter(midterm1==0 | midterm2==0))
 
-print(tests %>% filter(midterm1==0 | midterm2==0))
-
-rdsSave(tests)
+rdsSave(scores)

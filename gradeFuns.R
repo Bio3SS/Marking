@@ -1,11 +1,11 @@
 
-powerAve <- function(scores, dens, weights, downgrade=0){
-	## scores <- ifelse(scores==avenueMissing, 0, scores)
-	## scores <- ifelse(scores==avenueMSAF, NA, scores)
-	power <- sum(sign(1+scores), na.rm=TRUE)
+powerAve <- function(scores, dens, weights=dens, rho=NULL, downgrade=0){
+	power <- sum(sign(scores), na.rm=TRUE)
 	power <- (power+downgrade)/(1+downgrade) 
 	weight <- sum(sign(1+scores)*weights, na.rm=TRUE)
 	scores <- scores/dens
+	if (weight==0 | sum(scores, na.rm=TRUE)==0) return(0)
+	if(!is.null(rho)) scores <- oddsCurve(scores, rho)
 	tot <- sum(scores^power*weights, na.rm=TRUE)
 	return((tot/weight)^(1/power))
 }
@@ -22,8 +22,6 @@ naZero <- function(v){
 	return(ifelse(is.na(v), 0, v))
 }
 
-oddsCurve <- function(score, rho, points){
-	T = score/points
-	Tp = rho*T/(1-T+rho*T)
-	return(points*Tp)
+oddsCurve <- function(score, rho){
+	return(rho*score/(1-score+rho*score))
 }
