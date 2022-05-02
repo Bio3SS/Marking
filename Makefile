@@ -44,7 +44,7 @@ dropdir:
 ## Need to do setup wizard, then Enter/Export?
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=413706
 
-## Update classlist and use to ignore drops. sometimes.
+## Update classlist and use to address drops and adds
 ## dropdir/classlist.csv
 
 ######################################################################
@@ -146,17 +146,14 @@ Tests/%: | Tests
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
 ## final.scores.rtmp:  scores.R
-## final.scores.Rout:  scores.R
+## midterm2.scores.Rout: scores.R
+## midterm2.scores.Rout: midterm2.responses.tsv midterm2.scoring.csv
 impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
 
-impmakeR += classscores
-## final.classscores.Rout: classscores.R scores.R
-%.classscores.Rout: classscores.R %.scores.rds dropdir/classlist.csv
-	$(pipeR)
-
 ## Compare with Scantron-office scores (side branch)
+
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
 ## final.office.csv:
@@ -177,7 +174,11 @@ impmakeR += scorecomp
 impmakeR += merge
 ## midterm2.merge.Rout: midMerge.R
 impmakeR += merge
-midterm%.merge.Rout: midMerge.R midterm%.classscores.rds marks.rds
+midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
+	$(pipeR)
+
+## final.merge.Rtmp: merge.R final.scores.rds marks.rds
+final.merge.Rout: merge.R final.scores.rds marks.rds
 	$(pipeR)
 
 impmakeR += grade

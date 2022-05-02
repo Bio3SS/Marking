@@ -13,8 +13,10 @@ test <- paste0("M", pipeStar())
 marks <- rdsRead("marks")
 scores <- rdsRead("score")
 
-## names(scores)
-## names(marks)
+names(scores)
+names(marks)
+
+quit()
 
 scores <- (marks
 	%>% left_join(scores, by = "Username")

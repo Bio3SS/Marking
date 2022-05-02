@@ -10,6 +10,7 @@ class <- (csvRead()
 ## Instead of trying to control the spreadsheet, this year I made a master sheet on top of Celine's various sheets
 marks <- (tsvRead() %>% select(-c(Last,First))
 	%>% right_join(class)
+	%>% rename(idnum = OrgDefinedId)
 )
 
 ## summary(marks %>% mutate_if(is.character, as.factor))
