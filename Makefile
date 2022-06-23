@@ -294,6 +294,7 @@ courseAvenue.Rout: courseAvenue.R course.rds
 
 ## New version 2022 May 02 (Mon); make the file from scratch?
 ## mosaic_final.Rout.csv: mosaic_final.R
+## mosaic_final.Rout.csv: mosaic_final.R
 mosaic_final.Rout: mosaic_final.R course.rds
 	$(pipeR)
 
@@ -357,6 +358,7 @@ makestuff/Makefile:
 -include makestuff/os.mk
 
 -include makestuff/pipeR.mk
+-include makestuff/compare.mk
 
 -include makestuff/git.mk
 -include makestuff/visual.mk
