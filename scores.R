@@ -45,13 +45,13 @@ summary(bestVer)
 bubbleVersion <- pull(responses, X2)
 print(table(bubbleVersion))
 
-print(sum(bubbleVersion != bestVer))
 print(sum(bubbleVersion <= 0))
 
 verScore <- sapply(1:nrow(scores), function(i){
-	if (bubbleVersion[[i]]<=0) return(0)
+	if (bubbleVersion[[i]]<=0 | bubbleVersion[[i]]>5) return(0)
 	return(scores[[i, bubbleVersion[[i]]]])
 })
+print(sum(verScore != bestScore))
 
 scores <- (responses
 	%>% transmute(idnum=X1
@@ -62,5 +62,7 @@ scores <- (responses
 	)
 )
 summary(scores)
+
+scores |> filter (verScore != bestScore) |> print()
 
 rdsSave(scores)

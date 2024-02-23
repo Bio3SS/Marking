@@ -27,22 +27,25 @@ autopipeR = defined
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
 ## | dependencies might fix this
 
+## Remake dropdir for new term
 Ignore += dropdir
-dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2022
+undrop:
+	$(RM) dropdir
+## /home/dushoff/Dropbox/courses/3SS/2022
+dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2024
 dropdir:
-	$(linkdirname)
+	$(alwayslinkdirname)
 
 ## MPS transfer examples
-## mkdir dropdir/final_disk/ ##
-## downcall  dropdir/final_disk/ ##
-## cd dropdir/final_disk/ && lastunzip ##
-## mv ~/Downloads/scantron dropdir/midterm2_disk ##
+## mkdir dropdir/midterm1_disk/ ##
+## downcall dropdir/midterm1_disk/ ##
+## cd dropdir/midterm1_disk/ && lastunzip ##
 
 ######################################################################
 
 ## Make classlist from Avenue by downloading grades
 ## Need to do setup wizard, then Enter/Export?
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=413706
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=595825
 
 ## Update classlist and use to address drops and adds
 ## dropdir/classlist.csv
@@ -52,8 +55,9 @@ dropdir:
 ## Marks (does assignments prepares tests)
 ## Start the spreadsheet with the classlist
 
-## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/
-## dropdir/marks.tsv  ##
+## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
+## https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/edit#gid=1334246690
+## dropdir/marks.tsv ##
 
 ## Convert (unexplained) blanks to zeroes
 ## Note: this now affects notes, too; weird but not harmful, i think
@@ -64,6 +68,7 @@ marks.tsv: dropdir/marks.tsv zero.pl ##
 ## Parse the marks sheet (builds through semester as marks are added)
 ## Merge in classlist (which updates with add/drop)
 marks.Rout: marks.R marks.tsv dropdir/classlist.csv
+	$(pipeR)
 
 ######################################################################
 
@@ -113,14 +118,14 @@ pardirs += Tests
 ## EDIT .scanned.tsv NOT the original .dlm
 
 .PRECIOUS: dropdir/%.scanned.tsv
-## dropdir/final.scanned.tsv: 
+## dropdir/midterm1.scanned.tsv: 
 dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 	$(pcopy)
 
 Ignore += *.responses.tsv
-## final.responses.tsv: rmerge.pl dropdir/final.scanned.tsv
-
 ## rmerge no longer merges, but does catch some ID errors
+## It could be used to look at version numbers I guess
+## midterm1.responses.tsv: rmerge.pl dropdir/midterm1.scanned.tsv
 Ignore += %.responses.tsv
 %.responses.tsv: dropdir/%.scanned.tsv rmerge.pl
 	$(PUSH)
@@ -130,7 +135,7 @@ Ignore += %.responses.tsv
 ## Score the tests here (and compare with scantron score)
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
-## midterm2.scoring.csv: Tests/midterms.scantron.csv scoring.pl
+## midterm1.scoring.csv: scoring.pl
 .PRECIOUS: %.scoring.csv
 %.scoring.csv: Tests/outputs/%.scantron.csv scoring.pl
 	$(PUSH)
@@ -141,9 +146,9 @@ Tests/%: | Tests
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
-## final.scores.Rout:  scores.R
+## midterm1.scores.Rout: scores.R
 ## midterm2.scores.Rout: scores.R
-## midterm2.scores.Rout: midterm2.responses.tsv midterm2.scoring.csv
+## midterm2.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
 impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
@@ -240,7 +245,7 @@ dropdir/%.ssv:
 ## dropdir/extraPolls.ssv
 ## This whole thing is a bit loopy; we should probably parse, then make the manual, then add things up.
 
-## pollScore.grade.Rout.csv:  pollScore.R
+## pollScore.grade.Rout.csv: pollScore.R
 pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
 	$(pipeR)
 
