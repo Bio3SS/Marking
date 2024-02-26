@@ -72,7 +72,7 @@ marks.Rout: marks.R marks.tsv dropdir/classlist.csv
 
 ######################################################################
 
-## Posting to Avenue
+## Posting to Avenue (2024, Julianna is posting assignment scores to Avenue so far)
 ## Pull a single assignment score
 
 impmakeR += grade
@@ -157,11 +157,11 @@ impmakeR += scores
 
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
-## final.office.csv:
+## midterm1.office.csv:
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## final.scorecomp.Rout: scorecomp.R
+## midterm1.scorecomp.Rout: scorecomp.R
 impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
 	$(pipeR)
