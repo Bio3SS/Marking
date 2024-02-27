@@ -16,6 +16,8 @@ scores <- rdsRead("score")
 names(scores)
 names(marks)
 
+summary(marks)
+
 scores <- (marks
 	%>% left_join(scores, by = "idnum")
 	%>% setNames(sub(test, "", names(.)))
@@ -24,7 +26,7 @@ scores <- (marks
 
 ## Version problems
 print(scores 
-	%>% filter(!is.na(Ver) & (Ver!=bubVer) | (Ver != bestVer))
+	%>% filter(!is.na(Ver) & ((Ver!=bubVer) | (Ver != bestVer)))
 )
 
 ## Half tests?

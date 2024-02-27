@@ -13,7 +13,7 @@ marks <- (tsvRead() %>% select(-c(Last,First))
 	%>% rename(idnum = OrgDefinedId)
 )
 
-## summary(marks %>% mutate_if(is.character, as.factor))
+summary(marks %>% mutate_if(is.character, as.factor))
 
 ## Make this into a loop
 
@@ -35,6 +35,8 @@ if ("A1Total" %in% names(marks)){
 	)
 }
 
+summary(marks %>% mutate_if(is.character, as.factor))
+
 if ("A2Total" %in% names(marks)){
 
 	## Look for MSAF with mark
@@ -52,6 +54,8 @@ if ("A2Total" %in% names(marks)){
 		) %>% select(-c(A2Note,A2Total))
 	)
 }
+
+summary(marks %>% mutate_if(is.character, as.factor))
 
 if ("A3Total" %in% names(marks)){
 
@@ -71,6 +75,8 @@ if ("A3Total" %in% names(marks)){
 	)
 }
 
+summary(marks %>% mutate_if(is.character, as.factor))
+
 ## Right now the two midterms are different (only one with SA)
 ## Is it worth looping? If so, we should be checking for Note, not SA
 if ("M1SA" %in% names(marks))
@@ -88,6 +94,8 @@ if ("M1SA" %in% names(marks))
 		) %>% select(-c(M1Note))
 	)
 }
+
+summary(marks %>% mutate_if(is.character, as.factor))
 
 if ("M2Note" %in% names(marks))
 {

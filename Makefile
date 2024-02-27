@@ -27,14 +27,14 @@ autopipeR = defined
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
 ## | dependencies might fix this
 
-## Remake dropdir for new term
-Ignore += dropdir
-undrop:
-	$(RM) dropdir
-## /home/dushoff/Dropbox/courses/3SS/2022
+## /home/dushoff/Dropbox/courses/3SS/2022 for previous
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2024
 dropdir:
 	$(alwayslinkdirname)
+## Remake dropdir for new term
+Ignore += dropdir
+undrop:
+	$(RM) dropdir; $(MAKE) dropdir
 
 ## MPS transfer examples
 ## mkdir dropdir/midterm1_disk/ ##
@@ -55,7 +55,7 @@ dropdir:
 ## Marks (does assignments prepares tests)
 ## Start the spreadsheet with the classlist
 
-## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
+## OLD: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
 ## https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/edit#gid=1334246690
 ## dropdir/marks.tsv ##
 
@@ -167,6 +167,8 @@ impmakeR += scorecomp
 	$(pipeR)
 
 ######################################################################
+
+## midterm1.md: Record what's been done
 
 ## Merge MC with SA scores
 ## Who has an SA but not MC? Use to fix errors
