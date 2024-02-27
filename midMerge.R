@@ -21,12 +21,12 @@ summary(marks)
 scores <- (marks
 	%>% left_join(scores, by = "idnum")
 	%>% setNames(sub(test, "", names(.)))
-	%>% select(Username, idnum, SA, Ver, bubVer, bestVer, bestScore)
+	%>% select(Username, idnum, SA, Ver, bubVer, bestVer, verScore, bestScore)
 )
 
 ## Version problems
 print(scores 
-	%>% filter(!is.na(Ver) & ((Ver!=bubVer) | (Ver != bestVer)))
+	%>% filter(!is.na(Ver) & ((Ver!=bubVer) | (verScore != bestScore)))
 )
 
 ## Half tests?
@@ -34,7 +34,7 @@ print(filter(scores, is.na(SA) & !is.na(bestScore)))
 print(filter(scores, !is.na(SA) & is.na(bestScore)))
 
 scores <- (scores 
-	%>% rename(MC=bestScore)
+	%>% rename(MC=verScore)
 	%>% mutate(NULL
 		, total = ifelse((is.na(MC) & SA==0), 0, MC+SA)
 	) %>% select(

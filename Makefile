@@ -172,6 +172,7 @@ impmakeR += scorecomp
 
 ## Merge MC with SA scores
 ## Who has an SA but not MC? Use to fix errors
+## Also: choose here whether to use verScore (after complete QC) or else bestScore
 ## Also doing a version of avenue csv here
 
 impmakeR += merge
@@ -189,7 +190,7 @@ final.merge.Rout: finalMerge.R final.scores.rds marks.rds
 
 ## Test Grades to Avenue?
 impmakeR += grade
-## midterm2.grade.Rout: midtermGrade.R
+## midterm1.grade.Rout: midtermGrade.R
 midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 	$(pipeR)
 
@@ -197,9 +198,8 @@ final.grade.Rout: finalGrade.R final.merge.rds
 	$(pipeR)
 
 ## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
-## midterm2.avenue.Rout: avenue.R
-## midterm2.avenue.Rout.csv: avenue.R
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=595825
+## midterm1.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
 ## final.avenue.Rout.csv: avenue.R
 
 ######################################################################
@@ -357,10 +357,12 @@ Sources += Makefile
 
 Ignore += makestuff
 msrepo = https://github.com/dushoff
-Makefile: makestuff/Makefile
-makestuff/Makefile:
-	git clone $(msrepo)/makestuff
-	ls $@
+
+Makefile: makestuff/00.stamp
+makestuff/%.stamp:
+	- $(RM) makestuff/*.stamp
+	(cd makestuff && $(MAKE) pull) || git clone --depth 1 $(msrepo)/makestuff
+	touch $@
 
 -include makestuff/os.mk
 

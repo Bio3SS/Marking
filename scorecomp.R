@@ -17,7 +17,8 @@ scores <- full_join(
 	scans, scores
 )
 
-print(scores %>% filter(bubVer!=bestVer))
-print(scores %>% filter(score!=bestScore))
+## For scantron-key problems
+print(scores %>% filter(verScore != bestScore))
+print(scores %>% filter(score!=verScore | verScore != bestScore))
 
 rdsSave(scores)
