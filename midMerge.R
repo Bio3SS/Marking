@@ -15,7 +15,6 @@ scores <- rdsRead("score")
 
 names(scores)
 names(marks)
-
 summary(marks)
 
 scores <- (marks

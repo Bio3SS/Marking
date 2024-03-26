@@ -88,22 +88,22 @@ if ("M1SA" %in% names(marks))
 		) == 0
 	)
 
-	marks <- (marks %>%
-		mutate(NULL
-			, M1SA=ifelse(M1Note=="MSAF", NA, M1SA)
-		) %>% select(-c(M1Note))
+	marks <- (marks
+		%>% mutate(M1SA=ifelse(M1Note=="MSAF", NA, M1SA))
+		%>% select(-c(M1Note))
 	)
 }
 
-summary(marks %>% mutate_if(is.character, as.factor))
-
-if ("M2Note" %in% names(marks))
+if ("M2SA" %in% names(marks))
 {
-	marks <- (marks %>%
-		mutate(NULL
-			, M2SA=ifelse(M2Note=="MSAF", NA, 0)
-			, M2Ver=NA
-		)
+	stopifnot(
+		nrow(
+			marks %>% filter(M2Note=="MSAF" & !is.na(M2SA) & M2SA>0)
+		) == 0
+	)
+	marks <- (marks
+		%>% mutate(M2SA=ifelse(M2Note=="MSAF", NA, M2SA))
+		%>% select(-c(M2Note))
 	)
 }
 

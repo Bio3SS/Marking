@@ -36,17 +36,17 @@ undrop:
 	$(RM) dropdir; $(MAKE) dropdir
 
 ## MPS transfer examples
-## mkdir dropdir/midterm1_disk/ ##
-## downcall dropdir/midterm1_disk/ ##
-## cd dropdir/midterm1_disk/ && lastunzip ##
+## mkdir dropdir/midterm2_disk/ ##
+## downcall dropdir/midterm2_disk/ ##
+## cd dropdir/midterm2_disk/ && lastunzip ##
 
 ######################################################################
 
+## Update classlist and use to address drops and adds
 ## Make classlist from Avenue by downloading grades
 ## Need to do setup wizard, then Enter/Export?
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=595825
 
-## Update classlist and use to address drops and adds
 ## dropdir/classlist.csv
 
 ######################################################################
@@ -54,8 +54,8 @@ undrop:
 ## Marks (does assignments prepares tests)
 ## Start the spreadsheet with the classlist
 
-## OLD: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
 ## https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/edit#gid=1334246690
+## OLD: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
 ## dropdir/marks.tsv ##
 
 ## Convert (unexplained) blanks to zeroes
@@ -117,14 +117,14 @@ pardirs += Tests
 ## EDIT .scanned.tsv NOT the original .dlm
 
 .PRECIOUS: dropdir/%.scanned.tsv
-## dropdir/midterm1.scanned.tsv: 
+## dropdir/midterm2.scanned.tsv: 
 dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 	$(pcopy)
 
 Ignore += *.responses.tsv
 ## rmerge no longer merges, but does catch some ID errors
 ## It could be used to look at version numbers I guess
-## midterm1.responses.tsv: rmerge.pl dropdir/midterm1.scanned.tsv
+## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.scanned.tsv
 Ignore += %.responses.tsv
 %.responses.tsv: dropdir/%.scanned.tsv rmerge.pl
 	$(PUSH)
@@ -132,9 +132,11 @@ Ignore += %.responses.tsv
 ######################################################################
 
 ## Score the tests here (and compare with scantron score)
-Ignore += $(wildcard *.scoring.csv)
+
 ### Formatted key sheet (made from scantron.csv)
-## midterm1.scoring.csv: scoring.pl
+### Make it as optarget first!
+## midterm2.scoring.csv: scoring.pl
+Ignore += $(wildcard *.scoring.csv)
 .PRECIOUS: %.scoring.csv
 %.scoring.csv: Tests/outputs/%.scantron.csv scoring.pl
 	$(PUSH)
@@ -146,11 +148,13 @@ Tests/%: | Tests
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
 ## midterm1.scores.Rout: scores.R
+## midterm1.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
 ## midterm2.scores.Rout: scores.R
-## midterm2.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
 impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
+
+## Look at these tables (and also MPS-based tables below), fix problems and decide which score to use going forward (bestScore or verScore)
 
 ## Compare with Scantron-office scores (side branch)
 
@@ -160,7 +164,7 @@ Ignore += *.office.csv
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## midterm1.scorecomp.Rout: scorecomp.R
+## midterm2.scorecomp.Rout: scorecomp.R
 impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
 	$(pipeR)
@@ -168,6 +172,7 @@ impmakeR += scorecomp
 ######################################################################
 
 ## midterm1.md: Record what's been done
+## midterm2.md: Record what's been done
 
 ## Merge MC with SA scores
 ## Who has an SA but not MC? Use to fix errors
@@ -175,7 +180,7 @@ impmakeR += scorecomp
 ## Also doing a version of avenue csv here
 
 impmakeR += merge
-## midterm1.merge.Rout: midMerge.R
+## midterm2.merge.Rout: midMerge.R
 impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
 	$(pipeR)
@@ -189,7 +194,7 @@ final.merge.Rout: finalMerge.R final.scores.rds marks.rds
 
 ## Test Grades to Avenue?
 impmakeR += grade
-## midterm1.grade.Rout: midtermGrade.R
+## midterm2.grade.Rout: midtermGrade.R
 midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 	$(pipeR)
 
@@ -198,7 +203,7 @@ final.grade.Rout: finalGrade.R final.merge.rds
 
 ## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=595825
-## midterm1.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
+## midterm2.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
 ## final.avenue.Rout.csv: avenue.R
 
 ######################################################################
