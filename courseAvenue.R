@@ -10,7 +10,7 @@ summary(scores)
 
 ss <- (scores
 	%>% transmute(
-		OrgDefinedId=idnum , Username=macid
+		OrgDefinedId=idnum , Username
 		, `Course Points Grade` = courseGrade
 		, `End-of-Line Indicator` = "#"
 	)

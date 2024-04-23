@@ -2,7 +2,7 @@ library(dplyr)
 library(readr)
 library(shellpipes)
 
-Class <- 2327 ## 2022 May 02 (Mon
+Class <- 2092 ## 2024 Apr 23 (Tue)
 
 course <- (rdsRead()
 	%>% transmute(NULL

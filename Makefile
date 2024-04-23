@@ -104,7 +104,7 @@ Ignore += *.avenue.csv
 	$(PUSH)
 
 ## Click "import"
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=595825
 
 ######################################################################
 
@@ -120,7 +120,7 @@ pardirs += Tests
 ## EDIT .scanned.tsv NOT the original .dlm
 
 .PRECIOUS: dropdir/%.scanned.tsv
-## dropdir/midterm2.scanned.tsv: 
+## dropdir/final.scanned.tsv: 
 dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 	$(pcopy)
 
@@ -162,11 +162,11 @@ impmakeR += scores
 
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
-## midterm1.office.csv:
+## final.office.csv:
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## midterm2.scorecomp.Rout: scorecomp.R
+## final.scorecomp.Rout: scorecomp.R
 impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
 	$(pipeR)
@@ -177,6 +177,7 @@ Sources += $(wildcard *.md)
 
 ## midterm1.md: Record what's been done
 ## midterm2.md: Record what's been done
+## final.md: 
 
 ## Merge MC with SA scores
 ## Who has an SA but not MC? Use to fix errors
@@ -217,7 +218,7 @@ Sources += poll.mk ## Poll everywhere bonus not used
 ## Final exam and final grade
 
 ## Read and combine different mark sources
-combine.Rout: combine.R marks.rds midterm1.merge.rds midterm2.merge.rds final.merge.rds pollScore.grade.rds 
+combine.Rout: combine.R marks.rds midterm1.merge.rds midterm2.merge.rds final.merge.rds
 	$(pipeR)
 
 gradeFuns.Rout: gradeFuns.R
@@ -243,7 +244,6 @@ courseAvenue.Rout: courseAvenue.R course.rds
 ## Need to click on a weird "roster" icon, then
 ## download as EXCEL (upper right of roster display)
 ## and upload as CSV
-
 
 ## CHECK class number (needs to be cribbed from Mosaic and entered here)
 
