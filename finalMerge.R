@@ -22,6 +22,15 @@ scores <- (scores
 	)
 )
 
+print(tsvRead())
+
+scores <- (scores
+	|> left_join(tsvRead())
+	|> transmute(Username=Username
+		, total = ifelse(!is.na(defMark), defMark, total)
+	)
+)
+
 print(scores %>% filter(is.na(total)))
 
 summary(scores)

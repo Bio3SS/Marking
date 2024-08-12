@@ -190,9 +190,9 @@ impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
 	$(pipeR)
 
-## Doesn't do much, but can scan for people who didn't write final
-## final.merge.Rtmp: merge.R final.scores.rds marks.rds
-final.merge.Rout: finalMerge.R final.scores.rds marks.rds
+## Scan for people who didn't write final; add deferred marks as appropriate
+Sources += deferred.tsv
+final.merge.Rout: finalMerge.R final.scores.rds marks.rds dropdir/deferred.tsv
 	$(pipeR)
 
 ######################################################################
