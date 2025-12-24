@@ -2,21 +2,21 @@ library(shellpipes)
 library(dplyr)
 library(readr)
 
+## downgrade dilutes the power-balance effect
 ## 0 for no downgrade (power = number completed)
 ## 1000 for no balance (downgrade "dilutes" the power)
+## rho is a test-curve multiplier (rho=1 for no test curve)
 downgrade <- 0
 offset <- 0.5 ## Add before truncating
 testwt <- c(25, 25, 40)
-asntot <- c(16, 13, 10)
+asntot <- c(16, 13, 10, 10) ## SEE ALSO A1 …  below
 rho <- 1.5
 
 loadEnvironments()
 course <- rdsRead()
 
 course <- (course
-
 	%>% mutate(NULL
-		, polls = naZero(polls)
 		, final = naZero(final)
 	)
 	%>% rowwise()
@@ -30,13 +30,13 @@ course <- (course
 
 	%>% mutate(
 		asnAve = powerAve(
-			scores=c(A1, A2, A3)
+			scores=c(A1, A2, A3, A4)
 			, dens=asntot, weights=1, downgrade=downgrade
 		)
 	)
 
 	%>% mutate(
-		courseGrade = 90*testAve + 10*asnAve + polls
+		courseGrade = 90*testAve + 10*asnAve
 		, courseGrade = floor(courseGrade+offset)
 	)
 )
@@ -45,7 +45,6 @@ summary(course)
 
 grades <- (course
 	%>% transmute(Username, idnum
-		, polls=round(polls, 3)
 		, testAve=round(testAve, 3)
 		, asnAve=round(asnAve, 3)
 		, courseGrade

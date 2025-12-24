@@ -25,29 +25,31 @@ autopipeR = defined
 ## Scantron transmittals from MPS are subdirectories
 ## It could be better to have a private-subrepo for stuff I do by hand …
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
-## | dependencies might fix this
 
-## Remake dropdir for new term
-Ignore += dropdir
-undrop:
-	$(RM) dropdir
-## /home/dushoff/Dropbox/courses/3SS/2022
+## /home/dushoff/Dropbox/courses/3SS/2022 for previous
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2024
 dropdir:
 	$(alwayslinkdirname)
+## Remake dropdir for new term
+Ignore += dropdir
+undrop:
+	$(RM) dropdir; $(MAKE) dropdir
 
 ## MPS transfer examples
-## mkdir dropdir/midterm1_disk/ ##
-## downcall dropdir/midterm1_disk/ ##
-## cd dropdir/midterm1_disk/ && lastunzip ##
+## mkdir dropdir/midterm2_disk/ ##
+## downcall dropdir/midterm2_disk/ ##
+## cd dropdir/midterm2_disk/ && lastunzip ##
+## mkdir dropdir/final_disk/ ##
+## downcall dropdir/final_disk/ ##
+## cd dropdir/final_disk/ && lastunzip ##
 
 ######################################################################
 
+## Update classlist and use to address drops and adds
 ## Make classlist from Avenue by downloading grades
 ## Need to do setup wizard, then Enter/Export?
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=595825
 
-## Update classlist and use to address drops and adds
 ## dropdir/classlist.csv
 
 ######################################################################
@@ -55,8 +57,8 @@ dropdir:
 ## Marks (does assignments prepares tests)
 ## Start the spreadsheet with the classlist
 
-## https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
 ## https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/edit#gid=1334246690
+## OLD: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
 ## dropdir/marks.tsv ##
 
 ## Convert (unexplained) blanks to zeroes
@@ -72,7 +74,7 @@ marks.Rout: marks.R marks.tsv dropdir/classlist.csv
 
 ######################################################################
 
-## Posting to Avenue
+## Posting to Avenue (2024, Julianna is posting assignment scores to Avenue so far)
 ## Pull a single assignment score
 
 impmakeR += grade
@@ -102,7 +104,7 @@ Ignore += *.avenue.csv
 	$(PUSH)
 
 ## Click "import"
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=595825
 
 ######################################################################
 
@@ -118,14 +120,14 @@ pardirs += Tests
 ## EDIT .scanned.tsv NOT the original .dlm
 
 .PRECIOUS: dropdir/%.scanned.tsv
-## dropdir/midterm1.scanned.tsv: 
+## dropdir/final.scanned.tsv: 
 dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 	$(pcopy)
 
 Ignore += *.responses.tsv
 ## rmerge no longer merges, but does catch some ID errors
 ## It could be used to look at version numbers I guess
-## midterm1.responses.tsv: rmerge.pl dropdir/midterm1.scanned.tsv
+## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.scanned.tsv
 Ignore += %.responses.tsv
 %.responses.tsv: dropdir/%.scanned.tsv rmerge.pl
 	$(PUSH)
@@ -133,25 +135,28 @@ Ignore += %.responses.tsv
 ######################################################################
 
 ## Score the tests here (and compare with scantron score)
-Ignore += $(wildcard *.scoring.csv)
+### PUSH the scantron file in Tests first; not clear why I switched to this:
+### Used to just use justmakethere and the made version
+### There was also a .PRECIOUS with that rule (I guess because of remaking)
+
 ### Formatted key sheet (made from scantron.csv)
-## midterm1.scoring.csv: scoring.pl
+## midterm2.scoring.csv: scoring.pl
+Ignore += $(wildcard *.scoring.csv)
 .PRECIOUS: %.scoring.csv
 %.scoring.csv: Tests/outputs/%.scantron.csv scoring.pl
 	$(PUSH)
 
-.PRECIOUS: Tests/%
-Tests/%: | Tests
-	$(justmakethere)
-
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
 ## midterm1.scores.Rout: scores.R
+## midterm1.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
 ## midterm2.scores.Rout: scores.R
-## midterm2.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
+## final.scores.Rout: scores.R
 impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
+
+## Look at these tables (and also MPS-based tables below), fix problems and decide which score to use going forward (bestScore or verScore)
 
 ## Compare with Scantron-office scores (side branch)
 
@@ -168,19 +173,26 @@ impmakeR += scorecomp
 
 ######################################################################
 
+Sources += $(wildcard *.md)
+
+## midterm1.md: Record what's been done
+## midterm2.md: Record what's been done
+## final.md: 
+
 ## Merge MC with SA scores
 ## Who has an SA but not MC? Use to fix errors
+## Also: choose here whether to use verScore (after complete QC) or else bestScore
 ## Also doing a version of avenue csv here
 
 impmakeR += merge
-## midterm1.merge.Rout: midMerge.R
+## midterm2.merge.Rout: midMerge.R
 impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
 	$(pipeR)
 
-## Doesn't do much, but can scan for people who didn't write final
-## final.merge.Rtmp: merge.R final.scores.rds marks.rds
-final.merge.Rout: finalMerge.R final.scores.rds marks.rds
+## Scan for people who didn't write final; add deferred marks as appropriate
+Sources += deferred.tsv
+final.merge.Rout: finalMerge.R final.scores.rds marks.rds dropdir/deferred.tsv
 	$(pipeR)
 
 ######################################################################
@@ -195,79 +207,18 @@ final.grade.Rout: finalGrade.R final.merge.rds
 	$(pipeR)
 
 ## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=413706
-## midterm2.avenue.Rout: avenue.R
-## midterm2.avenue.Rout.csv: avenue.R
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=595825
+## midterm2.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
 ## final.avenue.Rout.csv: avenue.R
 
 ######################################################################
 
-## Polls
-
-## Get PollEverywhere data:
-## 	https://www.polleverywhere.com/reports
-## 	Create reports
-## 	Participant response history
-## 	Select groups for this year (include one fake macid question!)
-## 	Download csv (lower right)
-
-## To repeat:
-##		Reports / select report you want / Update reports (next to Current Run at top)
-
-##	dropdir/polls.csv ##
-
-######################################################################
-
-# Read the polls into three variables
-## Go through this step by step and figure out what PollEverywhere has changed ☹
-polls.Rout: polls.R dropdir/polls.csv
-	$(pipeR)
-
-# Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
-# Treat the question that matches "macid" as a fake (if present)
-# and use it to help with ID
-parsePolls.Rout: parsePolls.R polls.rda
-	$(pipeR)
-
-# Calculate a pollScore and combine with the extraScore made by hand
-# The csv is where to look for orphan lines and try to figure out if people are missing points they should get
-# Then loop back to the manual part of the .ssv
-
-## Edit extraPolls on dropdir; reset each year below
-## Github version should be kept blank
-## dropdir/extraPolls.ssv.rmk:
-Sources += extraPolls.ssv
-dropdir/%.ssv: 
-	$(CP) $*.ssv $@
-
-## Score polls and print a report about UNKNOWN scores
-## Look in the csv for unlinked scores to add to the manual column of extraPolls
-## dropdir/extraPolls.ssv
-## This whole thing is a bit loopy; we should probably parse, then make the manual, then add things up.
-
-## pollScore.grade.Rout.csv: pollScore.R
-pollScore.grade.Rout: pollScore.R dropdir/extraPolls.ssv parsePolls.rda
-	$(pipeR)
-
-## Provisional poll scores
-
-## Some sort of chaining problem here; impmakeR?
-## pollScore.avenue.Rout: avenue.R
-## pollScore.avenue.Rout.csv: avenueNA.pl
-
-# Ask people to answer a fake question with "macid" in it
-# in all the ways that they answered the polls
-# Then save people manually in column 3 of .ssv
-
-## pollScorePlus was an attempt to rescue using student number
-## Ditching because it confused me 2021 Apr 28 (Wed)
-
-######################################################################
+Sources += poll.mk ## Poll everywhere bonus not used
 
 ## Final exam and final grade
 
 ## Read and combine different mark sources
-combine.Rout: combine.R marks.rds midterm1.merge.rds midterm2.merge.rds final.merge.rds pollScore.grade.rds 
+combine.Rout: combine.R marks.rds midterm1.merge.rds midterm2.merge.rds final.merge.rds
 	$(pipeR)
 
 gradeFuns.Rout: gradeFuns.R
@@ -293,7 +244,6 @@ courseAvenue.Rout: courseAvenue.R course.rds
 ## Need to click on a weird "roster" icon, then
 ## download as EXCEL (upper right of roster display)
 ## and upload as CSV
-
 
 ## CHECK class number (needs to be cribbed from Mosaic and entered here)
 
@@ -355,10 +305,12 @@ Sources += Makefile
 
 Ignore += makestuff
 msrepo = https://github.com/dushoff
-Makefile: makestuff/Makefile
-makestuff/Makefile:
-	git clone $(msrepo)/makestuff
-	ls $@
+
+Makefile: makestuff/00.stamp
+makestuff/%.stamp:
+	- $(RM) makestuff/*.stamp
+	(cd makestuff && $(MAKE) pull) || git clone --depth 1 $(msrepo)/makestuff
+	touch $@
 
 -include makestuff/os.mk
 
