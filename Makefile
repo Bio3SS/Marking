@@ -26,18 +26,22 @@ autopipeR = defined
 ## It could be better to have a private-subrepo for stuff I do by hand …
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
 
-mirrors += 2024
+oldmirrors += 2024
+mirrors += dropdir
 
+## Remake dropdir for new term ## Also ADD to oldmirrors
 ## /home/dushoff/Dropbox/courses/3SS/2022 for previous
-dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2024
-dropdir:
-	$(alwayslinkdirname)
-## Remake dropdir for new term
+## 2024.old ## Not tested
+%.old:
+	$(MV) dropdir $*;
+	$(MAKE) dropdir
 Ignore += dropdir
-undrop:
-	$(RM) dropdir; $(MAKE) dropdir
+Ignore += $(oldmirrors)
 
-## MPS transfer examples
+## MPS transfer 
+## mkdir dropdir/midterm1_disk/ ##
+## downcall dropdir/midterm1_disk/ ##
+## cd dropdir/midterm1_disk/ && lastunzip ##
 ## mkdir dropdir/midterm2_disk/ ##
 ## downcall dropdir/midterm2_disk/ ##
 ## cd dropdir/midterm2_disk/ && lastunzip ##
