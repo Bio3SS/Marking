@@ -112,7 +112,7 @@ Ignore += *.avenue.csv
 
 ## Pipeline to mark and validate a set of scantrons
 ## See also content.mk 
-## Notes
+## Notes about scantron disks
 Sources += media.md
 
 pardirs += Tests
