@@ -26,6 +26,8 @@ autopipeR = defined
 ## It could be better to have a private-subrepo for stuff I do by hand …
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
 
+mirrors += 2024
+
 ## /home/dushoff/Dropbox/courses/3SS/2022 for previous
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2024
 dropdir:
@@ -316,6 +318,7 @@ makestuff/%.stamp:
 
 -include makestuff/pipeR.mk
 -include makestuff/compare.mk
+-include makestuff/mirror.mk
 
 -include makestuff/git.mk
 -include makestuff/visual.mk
