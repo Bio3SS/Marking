@@ -38,7 +38,7 @@ mirrors += dropdir
 Ignore += dropdir
 Ignore += $(oldmirrors)
 
-## MPS transfer 
+## MPS transfer (manual because it uses bash aliases, could be fixed)
 ## mkdir dropdir/midterm1_disk/ ##
 ## downcall dropdir/midterm1_disk/ ##
 ## cd dropdir/midterm1_disk/ && lastunzip ##
