@@ -185,9 +185,12 @@ impmakeR += scorecomp
 
 Sources += $(wildcard *.md)
 
+## These are in journal.md now. Can delete
 ## midterm1.md: Record what's been done
 ## midterm2.md: Record what's been done
 ## final.md: 
+
+######################################################################
 
 ## Merge MC with SA scores
 ## Who has an SA but not MC? Use to fix errors
