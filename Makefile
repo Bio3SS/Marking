@@ -7,7 +7,7 @@ current: target
 -include makestuff/perl.def
 
 vim_session:
-	bash -cl "vmt content.mk"
+	bash -cl "vmt journal.md content.mk"
 
 ######################################################################
 
@@ -133,6 +133,7 @@ dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 Ignore += *.responses.tsv
 ## rmerge no longer merges, but does catch some ID errors
 ## It could be used to look at version numbers I guess
+## midterm1.responses.tsv: rmerge.pl dropdir/midterm1.scanned.tsv
 ## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.scanned.tsv
 Ignore += %.responses.tsv
 %.responses.tsv: dropdir/%.scanned.tsv rmerge.pl
@@ -146,6 +147,7 @@ Ignore += %.responses.tsv
 ### There was also a .PRECIOUS with that rule (I guess because of remaking)
 
 ### Formatted key sheet (made from scantron.csv)
+## midterm1.scoring.csv: scoring.pl
 ## midterm2.scoring.csv: scoring.pl
 Ignore += $(wildcard *.scoring.csv)
 .PRECIOUS: %.scoring.csv
@@ -168,10 +170,12 @@ impmakeR += scores
 
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
+## midterm1.office.csv:
 ## final.office.csv:
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
+## midterm1.scorecomp.Rout: scorecomp.R
 ## final.scorecomp.Rout: scorecomp.R
 impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R
