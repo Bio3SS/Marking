@@ -63,8 +63,9 @@ Ignore += $(oldmirrors)
 ## Marks (does assignments prepares tests)
 ## Start the spreadsheet with the classlist
 
-## https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/edit#gid=1334246690
-## OLD: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ OLD
+## https://docs.google.com/spreadsheets/d/15yTrBN51QBKRDrFTJPgYx9S_sviIt9rWbEx1_o5XMuo/edit
+## 2024 https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/ 
+## 2022: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ 
 ## dropdir/marks.tsv ##
 
 ## Convert (unexplained) blanks to zeroes
@@ -80,7 +81,6 @@ marks.Rout: marks.R marks.tsv dropdir/classlist.csv
 
 ######################################################################
 
-## Posting to Avenue (2024, Julianna is posting assignment scores to Avenue so far)
 ## Pull a single assignment score
 
 impmakeR += grade
