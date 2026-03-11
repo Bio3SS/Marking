@@ -184,11 +184,7 @@ impmakeR += scorecomp
 ######################################################################
 
 Sources += $(wildcard *.md)
-
-## These are in journal.md now. Can delete
-## midterm1.md: Record what's been done
-## midterm2.md: Record what's been done
-## final.md: 
+## Keep track of fixes and decisions in journal.md
 
 ######################################################################
 
