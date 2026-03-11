@@ -209,6 +209,7 @@ final.merge.Rout: finalMerge.R final.scores.rds marks.rds dropdir/deferred.tsv
 
 ## Test Grades to Avenue?
 impmakeR += grade
+## midterm1.grade.Rout: midtermGrade.R
 ## midterm2.grade.Rout: midtermGrade.R
 midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 	$(pipeR)
@@ -216,10 +217,14 @@ midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
 final.grade.Rout: finalGrade.R final.merge.rds
 	$(pipeR)
 
-## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=595825
-## midterm2.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=757445
+
+## midterm1.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
+## midterm2.avenue.Rout.csv: avenue.R midterm2.avenue.Rout
 ## final.avenue.Rout.csv: avenue.R
+
+## TF is this?? Not working 2026 Mar 11 (Wed)
+## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
 
 ######################################################################
 
