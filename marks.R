@@ -6,18 +6,23 @@ library(shellpipes)
 
 ## 2024: classlist has accumulated a bunch of uploaded stuff, so select what you want
 class <- (csvRead()
+	%>% select(Username)
 	%>% mutate(Username=sub("#", "", Username))
-	%>% select(OrgDefinedId, Username)
 )
 
+## 2026: Trying again to control the spreadsheet
 ## 2022: Instead of trying to control the spreadsheet, I made a master sheet on top of Celine's various sheets
-marks <- (tsvRead() %>% select(-c(Last,First))
-	%>% right_join(class)
-	%>% rename(idnum = OrgDefinedId)
+marks <- (tsvRead() 
+	|> right_join(class)
+	|> mutate(idnum = as.character(idnum))
 )
 
 summary(marks %>% mutate_if(is.character, as.factor))
+rdsSave(marks)
 
+quit()
+
+## Maybe this stuff comes in later? 2026 Mar 10 (Tue)
 scores <- marks |> select(Username, idnum, M1Ver, M2Ver)
 
 for (col in names(marks)){

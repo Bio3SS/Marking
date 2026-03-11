@@ -54,7 +54,7 @@ verScore <- sapply(1:nrow(scores), function(i){
 print(sum(verScore != bestScore))
 
 scores <- (responses
-	%>% transmute(idnum=X1
+	%>% transmute(idnum= sub("#", "", X1)
 		, bubVer=X2
 		, bestScore
 		, bestVer

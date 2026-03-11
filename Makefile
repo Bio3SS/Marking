@@ -54,7 +54,7 @@ Ignore += $(oldmirrors)
 ## Update classlist and use to address drops and adds
 ## Make classlist from Avenue by downloading grades
 ## Need to do setup wizard, then Enter/Export?
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=595825
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=757445
 
 ## dropdir/classlist.csv
 
@@ -198,6 +198,7 @@ Sources += $(wildcard *.md)
 ## Also doing a version of avenue csv here
 
 impmakeR += merge
+## midterm1.merge.Rout: midMerge.R
 ## midterm2.merge.Rout: midMerge.R
 impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
