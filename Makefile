@@ -142,9 +142,8 @@ Ignore += %.responses.tsv
 ######################################################################
 
 ## Score the tests here (and compare with scantron score)
-### PUSH the scantron file in Tests first; not clear why I switched to this:
-### Used to just use justmakethere and the made version
-### There was also a .PRECIOUS with that rule (I guess because of remaking)
+### PUSH the scantron file in Tests first
+### Don't want to accidentally update scantrons when test banks change
 
 ### Formatted key sheet (made from scantron.csv)
 ## midterm1.scoring.csv: scoring.pl
@@ -157,12 +156,17 @@ Ignore += $(wildcard *.scoring.csv)
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
 ## midterm1.scores.Rout: scores.R
+
 ## midterm1.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
 ## midterm2.scores.Rout: scores.R
 ## final.scores.Rout: scores.R
 impmakeR += scores
 %.scores.Rout: scores.R %.responses.tsv %.scoring.csv
 	$(pipeR)
+
+## Share responses with students
+midterm1.bubbles.csv: bubbles.pl midterm1.responses.tsv
+	$(PUSH)
 
 ## Look at these tables (and also MPS-based tables below), fix problems and decide which score to use going forward (bestScore or verScore)
 
