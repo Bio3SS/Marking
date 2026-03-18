@@ -165,6 +165,7 @@ impmakeR += scores
 	$(pipeR)
 
 ## Share responses with students
+Ignore += *.bubbles.csv
 midterm1.bubbles.csv: bubbles.pl midterm1.responses.tsv
 	$(PUSH)
 
