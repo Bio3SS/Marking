@@ -211,7 +211,7 @@ final.merge.Rout: finalMerge.R final.scores.rds marks.rds dropdir/deferred.tsv
 impmakeR += grade
 ## midterm1.grade.Rout: midtermGrade.R
 ## midterm2.grade.Rout: midtermGrade.R
-midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds
+midterm%.grade.Rout: midtermGrade.R midterm%.merge.rds gradeFuns.rda
 	$(pipeR)
 
 final.grade.Rout: finalGrade.R final.merge.rds

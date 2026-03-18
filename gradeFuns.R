@@ -22,6 +22,7 @@ naZero <- function(v){
 	return(ifelse(is.na(v), 0, v))
 }
 
-oddsCurve <- function(score, rho){
-	return(rho*score/(1-score+rho*score))
+oddsCurve <- function(score, rho, max=1){
+	perc <- score/max
+	return(score*rho/(1-perc+rho*perc))
 }
