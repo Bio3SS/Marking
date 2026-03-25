@@ -29,6 +29,7 @@ autopipeR = defined
 oldmirrors += 2024
 mirrors += dropdir
 
+## This is just craziness; moves for one computer at a time, does not seem to archive??
 ## Remake dropdir for new term ## Also ADD to oldmirrors
 ## /home/dushoff/Dropbox/courses/3SS/2022 for previous
 ## 2024.old ## Not tested
@@ -64,6 +65,7 @@ Ignore += $(oldmirrors)
 ## Start the spreadsheet with the classlist
 
 ## https://docs.google.com/spreadsheets/d/15yTrBN51QBKRDrFTJPgYx9S_sviIt9rWbEx1_o5XMuo/edit
+
 ## 2024 https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/ 
 ## 2022: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ 
 ## dropdir/marks.tsv ##
@@ -166,7 +168,9 @@ impmakeR += scores
 
 ## Share responses with students
 Ignore += *.bubbles.csv
-midterm1.bubbles.csv: bubbles.pl midterm1.responses.tsv
+## midterm1.bubbles.csv: bubbles.pl
+## midterm2.bubbles.csv: bubbles.pl
+%.bubbles.csv: bubbles.pl %.responses.tsv
 	$(PUSH)
 
 ## Look at these tables (and also MPS-based tables below), fix problems and decide which score to use going forward (bestScore or verScore)
