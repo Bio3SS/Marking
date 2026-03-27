@@ -143,6 +143,7 @@ Ignore += %.responses.tsv
 %.responses.tsv: dropdir/%.scanned.tsv dropdir/%.manual.tsv rmerge.pl
 	$(PUSH)
 
+Ignore += *.manual.tsv
 ## midterm1.manual.tsv: manual.pl
 ## midterm2.manual.tsv: manual.pl dropdir/midterm2.manual.txt
 	
