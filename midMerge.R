@@ -44,3 +44,5 @@ summary(scores)
 
 rdsSave(scores)
 
+print(mean(scores$MC[scores$MC>0], na.rm=TRUE))
+print(mean(scores$SA[scores$SA>0], na.rm=TRUE))

@@ -56,6 +56,8 @@ Ignore += $(oldmirrors)
 ## Make classlist from Avenue by downloading grades
 ## Need to do setup wizard, then Enter/Export?
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=757445
+## Choose “both” for identifiers.
+## Don't click any grade options and (glitch) you probably need to unselect <text> options anyway.
 
 ## dropdir/classlist.csv
 
@@ -65,9 +67,7 @@ Ignore += $(oldmirrors)
 ## Start the spreadsheet with the classlist
 
 ## https://docs.google.com/spreadsheets/d/15yTrBN51QBKRDrFTJPgYx9S_sviIt9rWbEx1_o5XMuo/edit
-
-## 2024 https://docs.google.com/spreadsheets/d/19K_AwOckE_H_CwhZR_h4Bw5uRh-LEO90/ 
-## 2022: https://docs.google.com/spreadsheets/d/1wGko_PoF90LTfOuYN6fkFqkAFNjzzDS0xkTI3qzx8lo/ 
+## Use download as tsv and the gD.
 ## dropdir/marks.tsv ##
 
 ## Convert (unexplained) blanks to zeroes
@@ -185,6 +185,7 @@ Ignore += *.office.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
 ## midterm1.scorecomp.Rout: scorecomp.R
+## midterm2.scorecomp.Rout: scorecomp.R
 ## final.scorecomp.Rout: scorecomp.R
 impmakeR += scorecomp
 %.scorecomp.Rout: %.office.csv %.scores.rds scorecomp.R

@@ -4,7 +4,7 @@ library(shellpipes)
 
 loadEnvironments()
 
-rho <- c(1.4, 1)
+rho <- c(1.4, 1.4)
 
 v <- pipeStar()
 
