@@ -161,13 +161,12 @@ Ignore += *.manual.tsv
 ## midterm2.scoring.csv: scoring.pl
 Ignore += $(wildcard *.scoring.csv)
 .PRECIOUS: %.scoring.csv
-%.scoring.csv: Tests/outputs/%.scantron.csv scoring.pl
+%.scoring.csv: Tests/outputs/%.allkeys.csv scoring.pl
 	$(PUSH)
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
 ## midterm1.scores.Rout: scores.R
-
 ## midterm1.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
 ## midterm2.scores.Rout: scores.R
 ## final.scores.Rout: scores.R
