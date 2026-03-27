@@ -137,8 +137,16 @@ Ignore += *.responses.tsv
 ## It could be used to look at version numbers I guess
 ## midterm1.responses.tsv: rmerge.pl dropdir/midterm1.scanned.tsv
 ## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.scanned.tsv
+## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.manual.tsv
+
 Ignore += %.responses.tsv
-%.responses.tsv: dropdir/%.scanned.tsv rmerge.pl
+%.responses.tsv: dropdir/%.scanned.tsv dropdir/%.manual.tsv rmerge.pl
+	$(PUSH)
+
+## midterm1.manual.tsv: manual.pl
+## midterm2.manual.tsv: manual.pl dropdir/midterm2.manual.txt
+	
+%.manual.tsv: $(wildcard dropdir/*.manual.txt) manual.pl
 	$(PUSH)
 
 ######################################################################
