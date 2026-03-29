@@ -173,7 +173,7 @@ Ignore += *.bubbles.csv
 %.bubbles.csv: bubbles.pl %.responses.tsv
 	$(PUSH)
 
-## Look at these tables (and also MPS-based tables below), fix problems and decide which score to use going forward (bestScore or verScore)
+## Look at these tables (and also MPS-based tables below), fix problems and compare bestScore and verScore
 
 ## Compare with Scantron-office scores (side branch)
 

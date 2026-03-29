@@ -1,7 +1,10 @@
 use strict;
 use 5.10.0;
 
-say "OrgDefinedId,M1 bubble Text Grade,End-of-Line Indicator";
+my $test=$ARGV[0];
+$test =~ s/\..*//;
+
+say "OrgDefinedId,$test bubble Text Grade,End-of-Line Indicator";
 while(<>){
 	## s/^/"/;
 	s/ /X/;
