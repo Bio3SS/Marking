@@ -5,7 +5,7 @@ my %idlist;
 while (<>){
 	chomp;
 	next if /^$/;
-	my ($id, $scores) = /^([ 0-9]*)\t([*0-5A-E \t-]*)\s*$/ or
+	my ($id, $scores) = /^([ 0-9]*)\t([*0-7A-E \t-]*)\s*$/ or
 		die "Unparsed line $_";
 	say "#$id\t$scores" unless defined $idlist{$id};
 	$idlist{$id} = 0;

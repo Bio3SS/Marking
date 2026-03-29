@@ -135,10 +135,18 @@ dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 Ignore += *.responses.tsv
 ## rmerge no longer merges, but does catch some ID errors
 ## It could be used to look at version numbers I guess
-## midterm1.responses.tsv: rmerge.pl dropdir/midterm1.scanned.tsv
-## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.scanned.tsv
+## midterm1.responses.tsv: rmerge.pl 
+## midterm2.responses.tsv: rmerge.pl
+
 Ignore += %.responses.tsv
-%.responses.tsv: dropdir/%.scanned.tsv rmerge.pl
+%.responses.tsv: dropdir/%.scanned.tsv dropdir/%.manual.tsv rmerge.pl
+	$(PUSH)
+
+Ignore += *.manual.tsv
+## midterm1.manual.tsv: manual.pl
+## midterm2.manual.tsv: manual.pl dropdir/midterm2.manual.txt
+	
+%.manual.tsv: $(wildcard dropdir/*.manual.txt) manual.pl
 	$(PUSH)
 
 ######################################################################
@@ -152,13 +160,12 @@ Ignore += %.responses.tsv
 ## midterm2.scoring.csv: scoring.pl
 Ignore += $(wildcard *.scoring.csv)
 .PRECIOUS: %.scoring.csv
-%.scoring.csv: Tests/outputs/%.scantron.csv scoring.pl
+%.scoring.csv: Tests/outputs/%.allkeys.csv scoring.pl
 	$(PUSH)
 
 ## Score the students (ancient, deep matching)
 ## How many have weird bubble versions? How many have best ≠ bubble?
 ## midterm1.scores.Rout: scores.R
-
 ## midterm1.scores.Rout: midterm1.responses.tsv midterm1.scoring.csv
 ## midterm2.scores.Rout: scores.R
 ## final.scores.Rout: scores.R
@@ -173,13 +180,13 @@ Ignore += *.bubbles.csv
 %.bubbles.csv: bubbles.pl %.responses.tsv
 	$(PUSH)
 
-## Look at these tables (and also MPS-based tables below), fix problems and compare bestScore and verScore
-
-## Compare with Scantron-office scores (side branch)
+## Look at these tables (and also MPS-based tables below), fix problems and decide which score to use going forward (bestScore or verScore)
+## In general, best to fix enough problems that you can use verScore
 
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
 ## midterm1.office.csv:
+## midterm2.office.csv:
 ## final.office.csv:
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@

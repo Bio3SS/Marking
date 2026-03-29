@@ -48,7 +48,7 @@ print(table(bubbleVersion))
 print(sum(bubbleVersion <= 0))
 
 verScore <- sapply(1:nrow(scores), function(i){
-	if (bubbleVersion[[i]]<=0 | bubbleVersion[[i]]>5) return(0)
+	if (!bubbleVersion[[i]] %in% unique(key$Version)) return(0)
 	return(scores[[i, bubbleVersion[[i]]]])
 })
 print(sum(verScore != bestScore))
