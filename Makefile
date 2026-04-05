@@ -7,7 +7,7 @@ current: target
 -include makestuff/perl.def
 
 vim_session:
-	bash -cl "vmt journal.md content.mk"
+	bash -ic "vmt journal.md content.mk"
 
 ######################################################################
 
