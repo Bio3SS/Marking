@@ -20,11 +20,15 @@ autopipeR = defined
 
 ######################################################################
 
+## ARCHIVE first
+
 ## dropdir is for anything downloaded
 ## But also for stuff we edit with student info
 ## Scantron transmittals from MPS are subdirectories
 ## It could be better to have a private-subrepo for stuff I do by hand …
 ## Implicit rules can sometimes delete dropdir files if they need to make dropdir, so don't chain; make dropdir manually (once per machine per year)
+
+## Think more about archiving: probably Ignore dropdir and link it to a year directory
 
 oldmirrors += 2024
 mirrors += dropdir
@@ -57,7 +61,7 @@ Ignore += $(oldmirrors)
 ## Need to do setup wizard, then Enter/Export?
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=757445
 ## Choose “both” for identifiers.
-## Don't click any grade options and (glitch) you probably need to unselect <text> options anyway.
+## Select all grade options so that you can unselect (top radio box)
 
 ## dropdir/classlist.csv
 
@@ -65,9 +69,12 @@ Ignore += $(oldmirrors)
 
 ## Marks (does assignments prepares tests)
 ## Start the spreadsheet with the classlist
+## Fill in MSAFs here
+
+## Make a separate “export” sheet for stuff that goes here
 
 ## https://docs.google.com/spreadsheets/d/15yTrBN51QBKRDrFTJPgYx9S_sviIt9rWbEx1_o5XMuo/edit
-## Use download as tsv and the gD.
+## Use download as tsv and then gD.
 ## dropdir/marks.tsv ##
 
 ## Convert (unexplained) blanks to zeroes
@@ -83,36 +90,7 @@ marks.Rout: marks.R marks.tsv dropdir/classlist.csv
 
 ######################################################################
 
-## Pull a single assignment score
-
-impmakeR += grade
-## assign2.grade.Rout: assignscore.R
-impmakeR += grade
-.PRECIOUS: assign%.grade.Rout
-assign%.grade.Rout: marks.rds assignscore.R
-	$(pipeR)
-
-## Simplifying, will it work? 2022 Mar 08 (Tue)
-## assign1.avenue.Rout: avenue.R
-## assign1.avenue.Rout.csv: avenue.R
-impmakeR += avenue
-%.avenue.Rout: %.grade.rds avenue.R
-	$(pipeR)
-
-## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
-## Avenue started giving me trouble with that as well, so now it just 
-## drops all lines with NA (which is stupid, we could do it above)
-## but then we'd have to worry about the logic set up for posting more than
-## one score at once (which we don't use anyway)
-## avenue is no longer stupid about NAs (flags them but continues the import), so this step is only aesthetic now.
-
-## assign3.avenue.csv: avenueNA.pl
-Ignore += *.avenue.csv
-%.avenue.csv: %.avenue.Rout.csv avenueNA.pl
-	$(PUSH)
-
-## Click "import"
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=595825
+## Deleted machinery for sheet-based assignment scores (we now have avenue-based assignment scores, but sheet-based MSAF notes for them)
 
 ######################################################################
 
