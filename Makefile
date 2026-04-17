@@ -7,7 +7,7 @@ current: target
 -include makestuff/perl.def
 
 vim_session:
-	bash -cl "vmt journal.md content.mk"
+	bash -ic "vmt journal.md content.mk"
 
 ######################################################################
 
@@ -113,9 +113,8 @@ dropdir/%.scanned.tsv: | dropdir/%_disk/BIOLOGY*.dlm
 Ignore += *.responses.tsv
 ## rmerge no longer merges, but does catch some ID errors
 ## It could be used to look at version numbers I guess
-## midterm1.responses.tsv: rmerge.pl dropdir/midterm1.scanned.tsv
-## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.scanned.tsv
-## midterm2.responses.tsv: rmerge.pl dropdir/midterm2.manual.tsv
+## midterm1.responses.tsv: rmerge.pl 
+## midterm2.responses.tsv: rmerge.pl
 
 Ignore += %.responses.tsv
 %.responses.tsv: dropdir/%.scanned.tsv dropdir/%.manual.tsv rmerge.pl
@@ -160,12 +159,12 @@ Ignore += *.bubbles.csv
 	$(PUSH)
 
 ## Look at these tables (and also MPS-based tables below), fix problems and decide which score to use going forward (bestScore or verScore)
-
-## Compare with Scantron-office scores (side branch)
+## In general, best to fix enough problems that you can use verScore
 
 ## Scantron-office scores do not exist for people with idnum problems
 Ignore += *.office.csv
 ## midterm1.office.csv:
+## midterm2.office.csv:
 ## final.office.csv:
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
