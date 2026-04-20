@@ -9,8 +9,8 @@ library(readr)
 downgrade <- 0
 offset <- 0.5 ## Add before truncating
 testwt <- c(25, 25, 40)
-asntot <- c(16, 13, 10, 10) ## SEE ALSO A1 …  below
-rho <- 1.5
+asntot <- c(16, 13, 12) ## SEE ALSO A1 …  below
+rho <- 1.4
 
 loadEnvironments()
 course <- rdsRead()
@@ -30,7 +30,7 @@ course <- (course
 
 	%>% mutate(
 		asnAve = powerAve(
-			scores=c(A1, A2, A3, A4)
+			scores=c(Assignment1, Assignment2, Assignment3)
 			, dens=asntot, weights=1, downgrade=downgrade
 		)
 	)

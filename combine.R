@@ -3,12 +3,10 @@ library(tidyr)
 library(stringr)
 library(shellpipes)
 
-## scores <- rdsRead("marks")
-## names(scores)
-## quit()
+## scores <- rdsRead("marks"); names(scores); quit()
 
 scores <- (rdsRead("marks")
-	%>% select(Username, idnum, A1, A2, A3, A4)
+	%>% select(Username, idnum, Assignment1, Assignment2, Assignment3)
 )
 
 testscores <- rdsReadList("merge", trim = ".merge.*")

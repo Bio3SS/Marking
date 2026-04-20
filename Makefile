@@ -61,7 +61,8 @@ Ignore += $(oldmirrors)
 ## Need to do setup wizard, then Enter/Export?
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/importexport/export/options_edit.d2l?ou=757445
 ## Choose “both” for identifiers.
-## Select all grade options so that you can unselect (top radio box)
+## Moving towards downloading assignment grades at the same time! 2026 Apr 19 (Sun)
+## Select radio box for “points grade”
 
 ## dropdir/classlist.csv
 
@@ -85,6 +86,7 @@ marks.tsv: dropdir/marks.tsv zero.pl ##
 
 ## Parse the marks sheet (builds through semester as marks are added)
 ## Merge in classlist (which updates with add/drop)
+## Rebuild 2026 because assignments are now on Avenue (via classlist)
 marks.Rout: marks.R marks.tsv dropdir/classlist.csv
 	$(pipeR)
 
@@ -115,7 +117,7 @@ Ignore += *.responses.tsv
 ## It could be used to look at version numbers I guess
 ## midterm1.responses.tsv: rmerge.pl 
 ## midterm2.responses.tsv: rmerge.pl
-
+## final.responses.tsv: rmerge.pl
 Ignore += %.responses.tsv
 %.responses.tsv: dropdir/%.scanned.tsv dropdir/%.manual.tsv rmerge.pl
 	$(PUSH)
@@ -130,15 +132,18 @@ Ignore += *.manual.tsv
 ######################################################################
 
 ## Score the tests here (and compare with scantron score)
-### PUSH the scantron file in Tests first
-### Don't want to accidentally update scantrons when test banks change
+### PUSH the CORRECT scantron file in Tests first
+### There are apparently two possible scantron csv files (allkeys allows more versions, for delayed SAS)
+### [Don't want to accidentally update scantrons when test banks change]
 
 ### Formatted key sheet (made from scantron.csv)
 ## midterm1.scoring.csv: scoring.pl
 ## midterm2.scoring.csv: scoring.pl
+## final.scoring.csv: scoring.pl
 Ignore += $(wildcard *.scoring.csv)
 .PRECIOUS: %.scoring.csv
-%.scoring.csv: Tests/outputs/%.allkeys.csv scoring.pl
+## %.scoring.csv: Tests/outputs/%.allkeys.csv scoring.pl
+%.scoring.csv: Tests/outputs/%.scantron.csv scoring.pl
 	$(PUSH)
 
 ## Score the students (ancient, deep matching)
@@ -155,6 +160,7 @@ impmakeR += scores
 Ignore += *.bubbles.csv
 ## midterm1.bubbles.csv: bubbles.pl
 ## midterm2.bubbles.csv: bubbles.pl
+## final.bubbles.csv: bubbles.pl
 %.bubbles.csv: bubbles.pl %.responses.tsv
 	$(PUSH)
 
@@ -217,6 +223,9 @@ final.grade.Rout: finalGrade.R final.merge.rds
 ## midterm1.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
 ## midterm2.avenue.Rout.csv: avenue.R midterm2.avenue.Rout
 ## final.avenue.Rout.csv: avenue.R
+impmakeR += avenue
+%.avenue.Rout: %.grade.rds avenue.R
+	$(pipeR)
 
 ## TF is this?? Not working 2026 Mar 11 (Wed)
 ## https://cap.mcmaster.ca/mcauth/login.jsp?app_id=1505&app_name=Avenue
@@ -250,6 +259,7 @@ courseAvenue.Rout: courseAvenue.R course.rds
 ## Mosaic
 
 ## Go to course through faculty center
+## Link not working 2026 Apr 19 (Sun)
 ## https://epprd.mcmaster.ca/psp/prepprd/EMPLOYEE/SA/c/SA_LEARNING_MANAGEMENT.SS_FACULTY.GBL?pslnkid=MCM_WC_FCLT_CNTR
 ## Need to click on a weird "roster" icon, then
 ## download as EXCEL (upper right of roster display)

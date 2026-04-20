@@ -4,6 +4,7 @@ library(shellpipes)
 
 loadEnvironments()
 
+## These rhos need to be copied to (or upgraded in)
 rho <- c(1.4, 1.4)
 
 v <- pipeStar()
