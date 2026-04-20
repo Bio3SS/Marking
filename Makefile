@@ -197,6 +197,7 @@ Sources += $(wildcard *.md)
 impmakeR += merge
 ## midterm1.merge.Rout: midMerge.R
 ## midterm2.merge.Rout: midMerge.R
+## final.merge.Rout: midMerge.R
 impmakeR += merge
 midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
 	$(pipeR)
@@ -260,11 +261,7 @@ courseAvenue.Rout: courseAvenue.R course.rds
 ## Mosaic
 
 ## Go to course through faculty center
-## Link not working 2026 Apr 19 (Sun)
-## https://epprd.mcmaster.ca/psp/prepprd/EMPLOYEE/SA/c/SA_LEARNING_MANAGEMENT.SS_FACULTY.GBL?pslnkid=MCM_WC_FCLT_CNTR
-## Need to click on a weird "roster" icon, then
-## download as EXCEL (upper right of roster display)
-## and upload as CSV
+## https://mosaic.mcmaster.ca/psp/prcsprd/EMPLOYEE/SA/c/SA_LEARNING_MANAGEMENT.SS_FACULTY.GBL?pslnkid=MCM_WC_FCLT_CNTR&FolderPath=PORTAL_ROOT_OBJECT.MCM_WC_FCLT_CNTR
 
 ## CHECK class number (needs to be cribbed from Mosaic and entered here)
 
@@ -274,26 +271,19 @@ courseAvenue.Rout: courseAvenue.R course.rds
 mosaic_final.Rout: mosaic_final.R course.rds
 	$(pipeR)
 
-## A version that merges in a csv downloaded from mosaic; this has been a plague
-## dropdir/mosaic.xls: HTML document, ASCII text
-## mv dropdir/mosaic.xls dropdir/mosaic.html ##
-## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
-## FAiled again 2021 Apr 28 (Wed) (readxl)
-## downcall dropdir/mosaic.csv
-## It would be better to change some of the code here and keep the
-## student numbers as strings
-## mosaic_grade.Rout.csv: mosaic_grade.R
-## mosaic_grade.Rout.csv: mosaic_grade.R
-mosaic_grade.Rout: dropdir/mosaic.csv course.rds mosaic_grade.R
-	$(pipeR)
+## DNWs available in final.merge.Rout
+
+## Dropping something called mosaic_grade.R from Makefile 2026 Apr 20 (Mon)
+## It used to be in the pipe below (instead of _final)
 
 ## Upload this .csv to mosaic
 ## Faculty center, online grading tab
 
 ## Copy grades to dropdir for diffing:
-#### cp mosaic_grade.Rout.csv dropdir ##
+grade.update: mosaic_final.Rout.csv
+	cp $< dropdir
 Ignore += grade.diff
-grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
+grade.diff: mosaic_final.Rout.csv dropdir/mosaic_final.Rout.csv
 	$(diff)
 
 ######################################################################
