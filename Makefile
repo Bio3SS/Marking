@@ -220,6 +220,7 @@ final.grade.Rout: finalGrade.R final.merge.rds
 
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=757445
 
+Ignore += *.avenue.csv
 ## midterm1.avenue.Rout.csv: avenue.R midterm1.avenue.Rout
 ## midterm2.avenue.Rout.csv: avenue.R midterm2.avenue.Rout
 ## final.avenue.Rout.csv: avenue.R
