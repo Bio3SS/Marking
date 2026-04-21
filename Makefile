@@ -283,6 +283,8 @@ mosaic_final.Rout: mosaic_final.R course.rds
 grade.update: mosaic_final.Rout.csv
 	cp $< dropdir
 Ignore += grade.diff
+
+## mv dropdir/mosaic_final.Rout.csv dropdir/mosaic_morning.Rout.csv ##
 grade.diff: mosaic_final.Rout.csv dropdir/mosaic_final.Rout.csv
 	$(diff)
 
