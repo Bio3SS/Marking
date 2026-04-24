@@ -9,4 +9,6 @@ Messed up the files; midterm is not re-makeable. Pushed an updated scantron usin
 
 Curved with rho=1.4, now built in to midtermGrade. Need to revisit this when compiling (use midtermGrade totals, maybe).
 
-Added a point to a slacker's grade (49⇒50). Not recorded here.
+popowice missed a midterm and didn't msaf! Gave him one point of relief (49⇒50). Not recorded here.
+
+charetr had a mis-recorded mark; her grade is 83 here but 82 on mosaic.
