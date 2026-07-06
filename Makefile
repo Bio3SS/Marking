@@ -120,7 +120,7 @@ Ignore += *.responses.tsv
 ## midterm2.responses.tsv: rmerge.pl
 ## final.responses.tsv: rmerge.pl
 Ignore += %.responses.tsv
-%.responses.tsv: dropdir/%.scanned.tsv dropdir/%.manual.tsv rmerge.pl
+%.responses.tsv: dropdir/%.scanned.tsv %.manual.tsv rmerge.pl
 	$(PUSH)
 
 Ignore += *.manual.tsv
@@ -271,7 +271,7 @@ courseAvenue.Rout: courseAvenue.R course.rds
 ## Go to course through faculty center
 ## https://mosaic.mcmaster.ca/psp/prcsprd/EMPLOYEE/SA/c/SA_LEARNING_MANAGEMENT.SS_FACULTY.GBL?pslnkid=MCM_WC_FCLT_CNTR&FolderPath=PORTAL_ROOT_OBJECT.MCM_WC_FCLT_CNTR
 
-## CHECK class number (needs to be cribbed from Mosaic and entered here)
+## CHECK class number (needs to be cribbed from Mosaic and entered in mosaic_final.R)
 
 ## New version 2022 May 02 (Mon); make the file from scratch?
 ## mosaic_final.Rout.csv: mosaic_final.R
