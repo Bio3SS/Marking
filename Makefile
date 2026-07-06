@@ -68,7 +68,6 @@ Ignore += $(oldmirrors)
 
 ######################################################################
 
-## Marks (does assignments prepares tests)
 ## Start the spreadsheet with the classlist
 ## Fill in MSAFs here
 
@@ -93,6 +92,8 @@ marks.Rout: marks.R marks.tsv dropdir/classlist.csv
 ######################################################################
 
 ## Deleted machinery for sheet-based assignment scores (we now have avenue-based assignment scores, but sheet-based MSAF notes for them)
+
+## Move to Avenue and get TAs to add NAs? Ask for advice 2026 Jul 06 (Mon)
 
 ######################################################################
 
@@ -125,9 +126,14 @@ Ignore += %.responses.tsv
 Ignore += *.manual.tsv
 ## midterm1.manual.tsv: manual.pl
 ## midterm2.manual.tsv: manual.pl dropdir/midterm2.manual.txt
-	
-%.manual.tsv: $(wildcard dropdir/*.manual.txt) manual.pl
+## final.manual.tsv: manual.pl dropdir/final.manual.txt
+
+## Add grades using dropdir/*.manual.txt
+## e.g., 400300000 7 ddcbc bddba dcacc eaebc
+%.manual.tsv: dropdir/%.manual.txt manual.pl
 	$(PUSH)
+dropdir/*.manual.txt:
+	$(touch)
 
 ######################################################################
 
@@ -203,6 +209,7 @@ midterm%.merge.Rout: midMerge.R midterm%.scores.rds marks.rds
 	$(pipeR)
 
 ## Scan for people who didn't write final; add deferred marks as appropriate
+## Shouldn't be necessary if .manual.txt works
 Sources += deferred.tsv
 final.merge.Rout: finalMerge.R final.scores.rds marks.rds dropdir/deferred.tsv
 	$(pipeR)
@@ -252,6 +259,7 @@ course.Rout: course.R gradeFuns.rda combine.rds
 	$(pipeR)
 
 ## 2021 special-purpose (final grades to Avenue)
+## courseAvenue.Rout.csv.compare:
 ## courseAvenue.Rout.csv: courseAvenue.R
 courseAvenue.Rout: courseAvenue.R course.rds
 	$(pipeR)
